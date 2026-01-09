@@ -2,6 +2,7 @@
 import React from "react";
 import "./globals.css";
 
+
 const passwordCorretta = "Glockyddo";
 
 export default function Home() {
@@ -10,12 +11,12 @@ export default function Home() {
         const password = passwordInput.value;
 
         if (!password) {
-            alert("Inserisci la password");
+            alert("Inserisci la password akhi");
             return;
         } else if (password === passwordCorretta) {
-            window.location.href = "/musica/layout.tsx";
+            window.location.href = "/musica";
         } else {
-            alert("Password errata akhi");
+            alert("Password errata peso");
         }
     }
 
