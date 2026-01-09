@@ -3,7 +3,7 @@ import React from "react";
 import "./globals.css";
 
 
-const passwordCorretta = "Glockyddo";
+const passwordCorretta = "dieyoung!";
 
 export default function Home() {
     function passwordCheck() {
@@ -11,12 +11,12 @@ export default function Home() {
         const password = passwordInput.value;
 
         if (!password) {
-            alert("Inserisci la password akhi");
+            alert("Inserisci la password");
             return;
         } else if (password === passwordCorretta) {
             window.location.href = "/musica";
         } else {
-            alert("Password errata peso");
+            alert("Password errata");
         }
     }
 
