@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const MONGODB_URI = process.env.MONGODB_URI!;
 
 if (!MONGODB_URI) {
-    throw new Error('Aggiungi MONGODB_URI nelle variabili ambiente tho!');
+    throw new Error("Variabile d'ambiente mancante");
 }
 
 // Type per cached connection
