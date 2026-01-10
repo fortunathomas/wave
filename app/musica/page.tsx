@@ -8,6 +8,8 @@ interface Song {
     artist: string;
     producer?: string;
     album?: string;
+    coverImage?: string;
+    visualVideo?: string;
     file: string;
     duration?: string;
     order: number;
@@ -19,6 +21,7 @@ export default function MusicaPage() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
+    const [volume, setVolume] = useState(1); // Volume da 0 a 1
     const analyserRef = useRef<AnalyserNode | null>(null);
     const audioContextRef = useRef<AudioContext | null>(null);
 
@@ -122,6 +125,21 @@ export default function MusicaPage() {
         }
     };
 
+    const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const newVolume = parseFloat(e.target.value);
+        setVolume(newVolume);
+        if (audioRef.current) {
+            audioRef.current.volume = newVolume;
+        }
+    };
+
+    // Imposta il volume quando l'audio viene caricato
+    useEffect(() => {
+        if (audioRef.current) {
+            audioRef.current.volume = volume;
+        }
+    }, [volume, currentSongIndex]);
+
     const formatTime = (time: number) => {
         if (!time || isNaN(time)) return '0:00';
         const mins = Math.floor(time / 60);
@@ -171,11 +189,12 @@ export default function MusicaPage() {
             <video
                 ref={videoRef}
                 className={styles.videoBackground}
-                src="/canvas/background.mp4"
+                src={currentSong?.visualVideo || '/canvas/swagtakes.mp4'}
                 autoPlay
                 loop
                 muted
                 playsInline
+                key={currentSongIndex} // Forza reload quando cambia canzone
             />
 
             {/* Overlay scuro */}
@@ -215,6 +234,15 @@ export default function MusicaPage() {
 
                 {/* Info canzone */}
                 <div className={styles.songInfo}>
+                    {/* Cover Image */}
+                    <div className={styles.coverContainer}>
+                        <img
+                            src={currentSong.coverImage || '/images/swagtakes.png'}
+                            alt={currentSong.title}
+                            className={styles.coverImage}
+                        />
+                    </div>
+
                     <h1 className={styles.songTitle}>{currentSong.title}</h1>
                     <p className={styles.songArtist}>{currentSong.artist}</p>
                     {currentSong.producer && (
@@ -323,6 +351,56 @@ export default function MusicaPage() {
                             <path d="M5 4l10 8-10 8V4zm10 8v8h2V4h-2v8z"/>
                         </svg>
                     </button>
+                </div>
+
+                {/* Volume Control */}
+                <div className={styles.volumeContainer}>
+                    <div
+                        className={styles.volumeIcon}
+                        onClick={() => {
+                            if (volume > 0) {
+                                setVolume(0);
+                                if (audioRef.current) audioRef.current.volume = 0;
+                            } else {
+                                setVolume(1);
+                                if (audioRef.current) audioRef.current.volume = 1;
+                            }
+                        }}
+                    >
+                        {volume === 0 ? (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                                <line x1="23" y1="9" x2="17" y2="15"></line>
+                                <line x1="17" y1="9" x2="23" y2="15"></line>
+                            </svg>
+                        ) : volume < 0.5 ? (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                            </svg>
+                        ) : (
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                            </svg>
+                        )}
+                    </div>
+                    <div className={styles.volumeSliderWrapper}>
+                        <div
+                            className={styles.volumeFill}
+                            style={{ width: `${volume * 100}%` }}
+                        />
+                        <input
+                            type="range"
+                            min="0"
+                            max="1"
+                            step="0.01"
+                            value={volume}
+                            onChange={handleVolumeChange}
+                            className={styles.volumeSlider}
+                        />
+                    </div>
+                    <span className={styles.volumePercent}>{Math.round(volume * 100)}%</span>
                 </div>
 
                 {/* Track counter */}

@@ -18,6 +18,8 @@ const songs = [
         artist: "tho",
         producer: "tho",
         album: "swag takes",
+        coverImage: "/images/swagtakes.png",
+        visualVideo: "/canvas/swagtakes.mp4",
         file: "/music/versatile.mp3",
         order: 1
     },
@@ -26,6 +28,8 @@ const songs = [
         artist: "tho & steezynml",
         producer: "tho",
         album: "swag takes",
+        coverImage: "/images/swagtakes.png",
+        visualVideo: "/canvas/swagtakes.mp4",
         file: "/music/paracodeine.mp3",
         order: 2
     },
@@ -34,6 +38,8 @@ const songs = [
         artist: "tho & musickdie",
         producer: "tho",
         album: "swag takes",
+        coverImage: "/images/swagtakes.png",
+        visualVideo: "/canvas/swagtakes.mp4",
         file: "/music/non-lo-so.mp3",
         order: 3
     },
@@ -42,6 +48,8 @@ const songs = [
         artist: "tho",
         producer: "tho",
         album: "swag takes",
+        coverImage: "/images/swagtakes.png",
+        visualVideo: "/canvas/swagtakes.mp4",
         file: "/music/problema-nella-mente.mp3",
         order: 4
     },
@@ -50,35 +58,43 @@ const songs = [
         artist: "tho & moozy",
         producer: "tho",
         album: "swag takes",
+        coverImage: "/images/swagtakes-deluxe.png",
+        visualVideo: "/canvas/swagtakes.mp4",
         file: "/music/going-down.mp3",
         order: 5
     },
 
     /* WIP
     {
-    title: "Sesta Energy",
-    artist: "tho",
-    producer: "tho",
-    album: "swag takes",
-    file: "/music/canzone6.mp3",
-    order: 6
+        title: "Sesta Energy",
+        artist: "tho",
+        producer: "tho",
+        album: "swag takes",
+        coverImage: "/images/sesta-energy.jpg",
+        visualVideo: "/canvas/swagtakes.mp4",
+        file: "/music/canzone6.mp3",
+        order: 6
     },
     {
-    title: "Settima Wave",
-    artist: "tho",
-    producer: "tho",
-    album: "swag takes",
-    file: "/music/canzone7.mp3",
-    order: 7
+        title: "Settima Wave",
+        artist: "tho",
+        producer: "tho",
+        album: "swag takes",
+        coverImage: "/images/settima-wave.jpg",
+        visualVideo: "/canvas/swagtakes.mp4",
+        file: "/music/canzone7.mp3",
+        order: 7
     },
     {
-    title: "Bonus Track",
-    artist: "tho",
-    producer: "tho",
-    file: "/music/bonus.mp3",
-    order: 8
+        title: "Bonus Track",
+        artist: "tho",
+        producer: "tho",
+        coverImage: "/images/bonus.jpg",
+        visualVideo: "/canvas/swagtakes.mp4",
+        file: "/music/bonus.mp3",
+        order: 8
     }
-    */
+     */
 ];
 
 async function seedDatabase() {
@@ -107,11 +123,11 @@ async function seedDatabase() {
             console.log(`  ${i + 1}. ${song.title} - ${song.album || 'No album'} (${song.file})`);
         });
 
-        console.log('\n Database popolato con successo bro!');
+        console.log('\n Database popolato con successo');
         await mongoose.connection.close();
         process.exit(0);
     } catch (error) {
-        console.error('Errore:', error);
+        console.error(' Errore:', error);
         await mongoose.connection.close();
         process.exit(1);
     }

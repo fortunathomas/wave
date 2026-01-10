@@ -17,6 +17,16 @@ const SongSchema = new mongoose.Schema({
         type: String,
         required: false,
     },
+    coverImage: {
+        type: String, // path tipo "/images/cover.jpg"
+        required: false,
+        default: '/images/swagtakes.png'
+    },
+    visualVideo: {
+        type: String, // path tipo "/canvas/visual1.mp4"
+        required: false,
+        default: '/canvas/swagtakes.mp4'
+    },
     file: {
         type: String, // path tipo "/music/canzone1.mp3"
         required: true,
