@@ -1,7 +1,10 @@
 // Script per popolare il database con le tue canzoni
 // Esegui: npx tsx scripts/seedSongs.ts
 
-import 'dotenv/config'; // Carica variabili d'ambiente
+// IMPORTANTE: dotenv DEVE essere prima di tutto
+import 'dotenv/config';
+
+// Ora importiamo il resto
 import dbConnect from '../app/lib/mongodb';
 import Song from '../app/models/Song';
 
