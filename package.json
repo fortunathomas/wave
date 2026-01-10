@@ -9,6 +9,9 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@vercel/node": "^5.5.16",
+    "bcrypt": "^6.0.0",
+    "mongodb": "^7.0.0",
     "next": "16.1.1",
     "react": "19.2.3",
     "react-dom": "19.2.3"
