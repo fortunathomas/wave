@@ -13,9 +13,10 @@ const PasswordSchema = new mongoose.Schema({
         type: Date,
         default: Date.now,
     }
+}, {
+    collection: 'spoiler'  // <- specifica la collection
 });
 
-// Previene errore di modello già compilato
 const Password = mongoose.models.Password || mongoose.model('Password', PasswordSchema);
 
 export default Password;
