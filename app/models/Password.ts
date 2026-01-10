@@ -14,7 +14,7 @@ const PasswordSchema = new mongoose.Schema({
         default: Date.now,
     }
 }, {
-    collection: 'spoiler'  // <- specifica la collection
+    collection: 'sitepassword'  // <- QUESTO È CRUCIALE tho! forza il nome esatto
 });
 
 const Password = mongoose.models.Password || mongoose.model('Password', PasswordSchema);
