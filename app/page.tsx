@@ -1,35 +1,36 @@
-"use client"
-import React from "react";
-import "./globals.css";
+"use client";
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
-const passwordCorretta = "dieyoung!";
+export default function LoginPage() {
+    const [password, setPassword] = useState("");
+    const router = useRouter();
 
-export default function Home() {
-    function passwordCheck() {
-        const passwordInput = document.getElementById("password") as HTMLInputElement;
-        const password = passwordInput.value;
+    async function handleLogin(e: React.FormEvent) {
+        e.preventDefault();
 
-        if (!password) {
-            alert("Inserisci la password");
-            return;
-        } else if (password === passwordCorretta) {
-            window.location.href = "/musica";
+        const res = await fetch("/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ password })
+        });
+
+        if (res.ok) {
+            router.push("/musica");
         } else {
             alert("Password errata");
         }
     }
 
     return (
-        <div>
-            <form id={"Form"} onSubmit={(e) => {
-                e.preventDefault();
-                passwordCheck();
-            }}>
-                <label htmlFor={"password"}>Password</label>
-                <input type="password" id="password" name="password" />
-                <button type="submit">Login</button>
-            </form>
-        </div>
+        <form onSubmit={handleLogin}>
+            <input
+                type="password"
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+            />
+            <button>Login</button>
+        </form>
     );
 }
