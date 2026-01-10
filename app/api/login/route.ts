@@ -4,14 +4,14 @@ import Password from '@/app/models/Password';
 
 export async function POST(request: NextRequest) {
     try {
-        console.log('🔥 API chiamata!');
+        console.log('API called');
 
         await dbConnect();
-        console.log('✅ Connesso a MongoDB!');
+        console.log('MongoDB connected');
 
         // DEBUG: vedi quale collection sta usando
-        console.log('📂 Collection name:', Password.collection.name);
-        console.log('📂 Database name:', Password.db.name);
+        console.log('Collection name:', Password.collection.name);
+        console.log('Database name:', Password.db.name);
 
         // DEBUG: conta i documenti
         const count = await Password.countDocuments();
