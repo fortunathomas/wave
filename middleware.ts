@@ -4,12 +4,14 @@ import type { NextRequest } from "next/server";
 export function middleware(req: NextRequest) {
     const isAuth = req.cookies.get("auth");
 
-    // Proteggi la pagina /musica
+    // Proteggi /musica
     if (!isAuth && req.nextUrl.pathname.startsWith("/musica")) {
         return NextResponse.redirect(new URL("/", req.url));
     }
+
+    return NextResponse.next();
 }
 
 export const config = {
-    matcher: ["/musica/:path*"]  // cambiato da dashboard a musica
+    matcher: ["/musica/:path*", "/musica"]  // proteggi sia /musica che /musica/qualcosa
 };
