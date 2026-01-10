@@ -2,10 +2,14 @@
 // Esegui: npx tsx scripts/seedSongs.ts
 
 // IMPORTANTE: dotenv DEVE essere prima di tutto
-import 'dotenv/config';
+import dotenv from 'dotenv';
+import path from 'path';
 
-// Ora importiamo il resto
-import dbConnect from '../app/lib/mongodb';
+// Carica .env.local dalla root del progetto (Next.js usa .env.local)
+dotenv.config({ path: path.join(__dirname, '..', '.env.local') });
+
+// Importiamo mongoose e il modello direttamente
+import mongoose from 'mongoose';
 import Song from '../app/models/Song';
 
 const songs = [
@@ -42,6 +46,7 @@ const songs = [
         order: 4
     },
     /* WIP
+
 {
     title: "Quinta Vibes",
     artist: "tho",
@@ -78,8 +83,14 @@ const songs = [
 
 async function seedDatabase() {
     try {
+        const MONGODB_URI = process.env.MONGODB_URI;
+
+        if (!MONGODB_URI) {
+            throw new Error('❌ MONGODB_URI non trovato nel file .env!');
+        }
+
         console.log('🔌 Connessione a MongoDB...');
-        await dbConnect();
+        await mongoose.connect(MONGODB_URI);
         console.log('✅ Connesso!');
 
         // Pulisce le canzoni esistenti (ATTENZIONE: cancella tutto!)
@@ -97,9 +108,11 @@ async function seedDatabase() {
         });
 
         console.log('\n🎉 Database popolato con successo bro!');
+        await mongoose.connection.close();
         process.exit(0);
     } catch (error) {
         console.error('❌ Errore:', error);
+        await mongoose.connection.close();
         process.exit(1);
     }
 }
