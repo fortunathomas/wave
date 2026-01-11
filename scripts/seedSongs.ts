@@ -59,7 +59,7 @@ const songs = [
         producer: "tho",
         album: "swag takes",
         coverImage: "/images/swagtakes-deluxe.png",
-        visualVideo: "/canvas/swagtakes.mp4",
+        visualVideo: "/canvas/swagtakes-deluxe.mp4",
         file: "/music/going-down.mp3",
         order: 5
     },
