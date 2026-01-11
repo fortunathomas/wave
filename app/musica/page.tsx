@@ -1,6 +1,15 @@
 "use client"
-import React, { useRef, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import styles from './style/MusicPlayer.module.css';
+import { useAudioPlayer, useVideoPlayer } from './hooks/useAudioPlayer';
+import {
+    Playlist,
+    SongInfo,
+    InfoModal,
+    ProgressBar,
+    Controls,
+    VolumeControl
+} from './components/UIComponents';
 
 interface Song {
     _id: string;
@@ -16,21 +25,30 @@ interface Song {
 }
 
 export default function MusicaPage() {
-    const audioRef = useRef<HTMLAudioElement>(null);
-    const videoRef = useRef<HTMLVideoElement>(null);
-    const isReversingRef = useRef(false);
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [currentTime, setCurrentTime] = useState(0);
-    const [duration, setDuration] = useState(0);
-    const [volume, setVolume] = useState(1);
-    const [showInfo, setShowInfo] = useState(false);
-    const analyserRef = useRef<AnalyserNode | null>(null);
-    const audioContextRef = useRef<AudioContext | null>(null);
-
     const [songs, setSongs] = useState<Song[]>([]);
     const [currentSongIndex, setCurrentSongIndex] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [showInfo, setShowInfo] = useState(false);
 
+    // Custom hooks
+    const {
+        audioRef,
+        isPlaying,
+        setIsPlaying,
+        currentTime,
+        setCurrentTime,
+        duration,
+        setDuration,
+        volume,
+        togglePlay,
+        handleSeek,
+        handleVolumeChange,
+        toggleMute
+    } = useAudioPlayer(songs, currentSongIndex);
+
+    const { videoRef, nextVideoRef } = useVideoPlayer(currentSongIndex);
+
+    // Fetch songs
     useEffect(() => {
         async function fetchSongs() {
             try {
@@ -52,136 +70,7 @@ export default function MusicaPage() {
         fetchSongs();
     }, []);
 
-    useEffect(() => {
-        if (audioRef.current && songs.length > 0) {
-            audioRef.current.load();
-            setCurrentTime(0);
-            setDuration(0);
-
-            if (isPlaying) {
-                audioRef.current.play().catch(console.error);
-            }
-        }
-
-        if (videoRef.current && songs.length > 0) {
-            isReversingRef.current = false;
-            videoRef.current.load();
-            videoRef.current.play().catch(console.error);
-        }
-    }, [currentSongIndex, songs]);
-
-    useEffect(() => {
-        const setupAudio = () => {
-            if (!audioRef.current || audioContextRef.current) return;
-
-            try {
-                const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-                const audioContext = new AudioContextClass();
-                const analyser = audioContext.createAnalyser();
-                const source = audioContext.createMediaElementSource(audioRef.current);
-
-                source.connect(analyser);
-                analyser.connect(audioContext.destination);
-                analyser.fftSize = 256;
-
-                audioContextRef.current = audioContext;
-                analyserRef.current = analyser;
-            } catch (error) {
-                console.error('Audio setup error:', error);
-            }
-        };
-
-        if (audioRef.current && !audioContextRef.current) {
-            setupAudio();
-        }
-    }, [currentSongIndex, songs]);
-
-    // REVERSE LOOP DEL VIDEO
-    useEffect(() => {
-        const video = videoRef.current;
-        if (!video) return;
-
-        let animationFrameId: number;
-
-        const reversePlay = () => {
-            if (!video) return;
-
-            if (video.currentTime <= 0.03) {
-                isReversingRef.current = false;
-                video.currentTime = 0;
-                video.play().catch(console.error);
-            } else {
-                video.currentTime = Math.max(0, video.currentTime - 0.033);
-                animationFrameId = requestAnimationFrame(reversePlay);
-            }
-        };
-
-        const handleTimeUpdate = () => {
-            if (!isReversingRef.current && video.currentTime >= video.duration - 0.03) {
-                isReversingRef.current = true;
-                video.pause();
-                animationFrameId = requestAnimationFrame(reversePlay);
-            }
-        };
-
-        video.addEventListener('timeupdate', handleTimeUpdate);
-
-        return () => {
-            video.removeEventListener('timeupdate', handleTimeUpdate);
-            if (animationFrameId) {
-                cancelAnimationFrame(animationFrameId);
-            }
-        };
-    }, [currentSongIndex]);
-
-    const togglePlay = async () => {
-        if (!audioRef.current || !audioContextRef.current) return;
-
-        try {
-            if (audioContextRef.current.state === 'suspended') {
-                await audioContextRef.current.resume();
-            }
-
-            if (isPlaying) {
-                audioRef.current.pause();
-                if (videoRef.current) videoRef.current.pause();
-                setIsPlaying(false);
-            } else {
-                await audioRef.current.play();
-                if (videoRef.current) videoRef.current.play();
-                setIsPlaying(true);
-            }
-        } catch (error) {
-            console.error('Errore play audio:', error);
-            setIsPlaying(false);
-            if (audioRef.current) {
-                audioRef.current.load();
-            }
-        }
-    };
-
-    const handleSeek = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const time = parseFloat(e.target.value);
-        if (audioRef.current) {
-            audioRef.current.currentTime = time;
-            setCurrentTime(time);
-        }
-    };
-
-    const handleVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const newVolume = parseFloat(e.target.value);
-        setVolume(newVolume);
-        if (audioRef.current) {
-            audioRef.current.volume = newVolume;
-        }
-    };
-
-    useEffect(() => {
-        if (audioRef.current) {
-            audioRef.current.volume = volume;
-        }
-    }, [volume, currentSongIndex]);
-
+    // Utility functions
     const formatTime = (time: number) => {
         if (!time || isNaN(time)) return '0:00';
         const mins = Math.floor(time / 60);
@@ -206,8 +95,19 @@ export default function MusicaPage() {
         }
     };
 
+    const handleAutoNext = () => {
+        setIsPlaying(false);
+        if (currentSongIndex < songs.length - 1) {
+            setTimeout(() => {
+                setCurrentSongIndex(currentSongIndex + 1);
+                setIsPlaying(true);
+            }, 500);
+        }
+    };
+
     const currentSong = songs[currentSongIndex];
 
+    // Loading state
     if (loading) {
         return (
             <div className={styles.loadingContainer}>
@@ -217,6 +117,7 @@ export default function MusicaPage() {
         );
     }
 
+    // Empty state
     if (songs.length === 0) {
         return (
             <div className={styles.errorContainer}>
@@ -227,6 +128,7 @@ export default function MusicaPage() {
 
     return (
         <div className={styles.pageContainer}>
+            {/* Video background */}
             <video
                 ref={videoRef}
                 className={styles.videoBackground}
@@ -234,106 +136,48 @@ export default function MusicaPage() {
                 autoPlay
                 muted
                 playsInline
+                preload="auto"
                 key={currentSongIndex}
             />
 
+            {/* Preload next video (hidden) */}
+            {currentSongIndex < songs.length - 1 && (
+                <video
+                    ref={nextVideoRef}
+                    style={{ display: 'none' }}
+                    src={songs[currentSongIndex + 1]?.visualVideo}
+                    preload="auto"
+                    muted
+                />
+            )}
+
             <div className={styles.overlay}></div>
 
+            {/* Player */}
             <div className={styles.playerContainer}>
-                <div className={styles.playlistContainer}>
-                    <div className={styles.playlistHeader}>
-                        <h3>SWAG TAKES</h3>
-                        <span className={styles.trackCount}>{songs.length} tracks</span>
-                    </div>
-                    <div className={styles.playlistScroll}>
-                        {songs.map((song, index) => (
-                            <div
-                                key={song._id}
-                                onClick={() => handleSongChange(index)}
-                                className={`${styles.playlistItem} ${index === currentSongIndex ? styles.active : ''}`}
-                            >
-                                <div className={styles.trackNumber}>{index + 1}</div>
-                                <div className={styles.trackInfo}>
-                                    <div className={styles.trackTitle}>{song.title}</div>
-                                    <div className={styles.trackArtist}>{song.artist}</div>
-                                </div>
-                                {index === currentSongIndex && isPlaying && (
-                                    <div className={styles.playingIndicator}>
-                                        <div className={styles.bar}></div>
-                                        <div className={styles.bar}></div>
-                                        <div className={styles.bar}></div>
-                                    </div>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                </div>
+                <Playlist
+                    songs={songs}
+                    currentSongIndex={currentSongIndex}
+                    isPlaying={isPlaying}
+                    onSongChange={handleSongChange}
+                    styles={styles}
+                />
 
-                <div className={styles.songInfo}>
-                    <div className={styles.coverContainer}>
-                        <img
-                            src={currentSong.coverImage || '/images/swagtakes.png'}
-                            alt={currentSong.title}
-                            className={styles.coverImage}
-                        />
-                    </div>
+                <SongInfo
+                    song={currentSong}
+                    onInfoClick={() => setShowInfo(!showInfo)}
+                    styles={styles}
+                />
 
-                    <div className={styles.songHeader}>
-                        <div>
-                            <h1 className={styles.songTitle}>{currentSong.title}</h1>
-                            <p className={styles.songArtist}>{currentSong.artist}</p>
-                        </div>
-                        <button
-                            onClick={() => setShowInfo(!showInfo)}
-                            className={styles.infoBtn}
-                            aria-label="Info"
-                        >
-                            <img src="/ico/info.png" alt="Info" width="24" height="24" />
-                        </button>
-                    </div>
-                </div>
-
-                {/* Info Modal */}
                 {showInfo && (
-                    <div className={styles.infoModal}>
-                        <div className={styles.infoContent}>
-                            <button
-                                onClick={() => setShowInfo(false)}
-                                className={styles.closeBtn}
-                            >
-                                <img src="/ico/x.png" alt="Close" width="20" height="20" />
-                            </button>
-                            <h3>Track Info</h3>
-                            <div className={styles.infoRow}>
-                                <span className={styles.infoLabel}>Title</span>
-                                <span className={styles.infoValue}>{currentSong.title}</span>
-                            </div>
-                            <div className={styles.infoRow}>
-                                <span className={styles.infoLabel}>Artist</span>
-                                <span className={styles.infoValue}>{currentSong.artist}</span>
-                            </div>
-                            {currentSong.producer && (
-                                <div className={styles.infoRow}>
-                                    <span className={styles.infoLabel}>Producer</span>
-                                    <span className={styles.infoValue}>{currentSong.producer}</span>
-                                </div>
-                            )}
-                            {currentSong.album && (
-                                <div className={styles.infoRow}>
-                                    <span className={styles.infoLabel}>Album</span>
-                                    <span className={styles.infoValue}>{currentSong.album}</span>
-                                </div>
-                            )}
-                            {currentSong.duration && (
-                                <div className={styles.infoRow}>
-                                    <span className={styles.infoLabel}>Duration</span>
-                                    <span className={styles.infoValue}>{currentSong.duration}</span>
-                                </div>
-                            )}
-                        </div>
-                    </div>
+                    <InfoModal
+                        song={currentSong}
+                        onClose={() => setShowInfo(false)}
+                        styles={styles}
+                    />
                 )}
 
+                {/* Audio element */}
                 <audio
                     ref={audioRef}
                     src={currentSong.file}
@@ -358,127 +202,34 @@ export default function MusicaPage() {
                             setDuration(audioRef.current.duration);
                         }
                     }}
-                    onEnded={() => {
-                        setIsPlaying(false);
-                        if (currentSongIndex < songs.length - 1) {
-                            setTimeout(() => {
-                                setCurrentSongIndex(currentSongIndex + 1);
-                                setIsPlaying(true);
-                            }, 500);
-                        }
-                    }}
+                    onEnded={handleAutoNext}
                 />
 
-                <div className={styles.progressContainer}>
-                    <div className={styles.progressWrapper}>
-                        <div
-                            className={styles.progressFill}
-                            style={{ width: `${(currentTime / (duration || 1)) * 100}%` }}
-                        />
-                        <input
-                            type="range"
-                            min="0"
-                            max={duration || 100}
-                            step="0.1"
-                            value={currentTime}
-                            onChange={handleSeek}
-                            disabled={!duration}
-                            className={styles.progressBar}
-                        />
-                    </div>
-                    <div className={styles.timeDisplay}>
-                        <span>{formatTime(currentTime)}</span>
-                        <span>{duration ? formatTime(duration) : '--:--'}</span>
-                    </div>
-                </div>
+                <ProgressBar
+                    currentTime={currentTime}
+                    duration={duration}
+                    onSeek={handleSeek}
+                    formatTime={formatTime}
+                    styles={styles}
+                />
 
-                <div className={styles.controls}>
-                    <button
-                        onClick={prevSong}
-                        disabled={currentSongIndex === 0}
-                        className={`${styles.controlBtn} ${styles.secondary}`}
-                    >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M19 20L9 12l10-8v16zm-9-8V4H8v16h2V12z"/>
-                        </svg>
-                    </button>
+                <Controls
+                    isPlaying={isPlaying}
+                    canGoPrev={currentSongIndex > 0}
+                    canGoNext={currentSongIndex < songs.length - 1}
+                    onPrev={prevSong}
+                    onPlay={togglePlay}
+                    onNext={nextSong}
+                    disabled={!duration}
+                    styles={styles}
+                />
 
-                    <button
-                        onClick={togglePlay}
-                        disabled={!duration}
-                        className={`${styles.controlBtn} ${styles.primary}`}
-                    >
-                        {isPlaying ? (
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                <rect x="6" y="4" width="4" height="16" rx="1"/>
-                                <rect x="14" y="4" width="4" height="16" rx="1"/>
-                            </svg>
-                        ) : (
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M8 5v14l11-7z"/>
-                            </svg>
-                        )}
-                    </button>
-
-                    <button
-                        onClick={nextSong}
-                        disabled={currentSongIndex === songs.length - 1}
-                        className={`${styles.controlBtn} ${styles.secondary}`}
-                    >
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                            <path d="M5 4l10 8-10 8V4zm10 8v8h2V4h-2v8z"/>
-                        </svg>
-                    </button>
-                </div>
-
-                <div className={styles.volumeContainer}>
-                    <div
-                        className={styles.volumeIcon}
-                        onClick={() => {
-                            if (volume > 0) {
-                                setVolume(0);
-                                if (audioRef.current) audioRef.current.volume = 0;
-                            } else {
-                                setVolume(1);
-                                if (audioRef.current) audioRef.current.volume = 1;
-                            }
-                        }}
-                    >
-                        {volume === 0 ? (
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                                <line x1="23" y1="9" x2="17" y2="15"></line>
-                                <line x1="17" y1="9" x2="23" y2="15"></line>
-                            </svg>
-                        ) : volume < 0.5 ? (
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                                <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                            </svg>
-                        ) : (
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-                                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-                            </svg>
-                        )}
-                    </div>
-                    <div className={styles.volumeSliderWrapper}>
-                        <div
-                            className={styles.volumeFill}
-                            style={{ width: `${volume * 100}%` }}
-                        />
-                        <input
-                            type="range"
-                            min="0"
-                            max="1"
-                            step="0.01"
-                            value={volume}
-                            onChange={handleVolumeChange}
-                            className={styles.volumeSlider}
-                        />
-                    </div>
-                    <span className={styles.volumePercent}>{Math.round(volume * 100)}%</span>
-                </div>
+                <VolumeControl
+                    volume={volume}
+                    onVolumeChange={handleVolumeChange}
+                    onToggleMute={toggleMute}
+                    styles={styles}
+                />
             </div>
         </div>
     );
