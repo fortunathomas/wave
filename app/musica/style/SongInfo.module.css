@@ -1,0 +1,112 @@
+/* ============================================
+   SONG INFO STYLES
+   Cover art, song title, artist, info button
+   ============================================ */
+
+/* --- SONG INFO SECTION --- */
+.songInfo {
+    text-align: center;
+    margin-bottom: clamp(1rem, 2vh, 2rem);
+}
+
+/* --- COVER IMAGE --- */
+.coverContainer {
+    margin: 0 auto clamp(0.75rem, 1.5vh, 1.25rem);
+    width: clamp(120px, 20vh, 180px);
+    height: clamp(120px, 20vh, 180px);
+    border-radius: 20px; /* Change to clip-path for squircle */
+    overflow: hidden;
+    box-shadow:
+            0 8px 24px rgba(0, 0, 0, 0.4),
+            0 0 0 1px rgba(14, 165, 233, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.coverContainer:hover {
+    transform: scale(1.02);
+    box-shadow:
+            0 12px 32px rgba(0, 0, 0, 0.5),
+            0 0 0 1px rgba(14, 165, 233, 0.4);
+}
+
+.coverImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* --- SONG HEADER (title + info button) --- */
+.songHeader {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    position: relative;
+    width: 100%;
+}
+
+.songHeader > div {
+    flex: 1;
+    text-align: center;
+    min-width: 0;
+    padding: 0 50px; /* Spazio per il bottone info */
+}
+
+/* --- SONG TITLE --- */
+.songTitle {
+    font-size: clamp(1.15rem, 2.5vh, 1.6rem);
+    font-weight: 700;
+    color: #f8fafc;
+    margin: 0 0 clamp(0.3rem, 0.6vh, 0.5rem) 0;
+    letter-spacing: -0.02em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* --- SONG ARTIST --- */
+.songArtist {
+    font-size: clamp(0.9rem, 1.75vh, 1.05rem);
+    font-weight: 500;
+    color: #94a3b8;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* --- INFO BUTTON --- */
+.infoBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: rgba(14, 165, 233, 0.15);
+    color: #0ea5e9;
+    border: 1px solid rgba(14, 165, 233, 0.3);
+    border-radius: 50%;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+    position: absolute;
+    right: 0;
+}
+
+.infoBtn:hover {
+    background: rgba(14, 165, 233, 0.25);
+    border-color: rgba(14, 165, 233, 0.5);
+    transform: scale(1.05);
+}
+
+.infoBtn:active {
+    transform: scale(0.95);
+}
+
+.infoBtn img {
+    width: 20px;
+    height: 20px;
+    display: block;
+}

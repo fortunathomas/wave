@@ -1,0 +1,138 @@
+/* ============================================
+   BASE STYLES
+   Font, Loading States, Main Containers
+   ============================================ */
+
+/* San Francisco Pro font - usa i font di sistema Apple */
+
+/* --- LOADING & ERROR STATES --- */
+.loadingContainer {
+    min-height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #0a0e1a;
+    color: #94a3b8;
+    gap: 1.5rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+}
+
+.loadingContainer p {
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.loadingSpinner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid rgba(30, 41, 59, 0.8);
+    border-top-color: #0ea5e9;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.errorContainer {
+    min-height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #0a0e1a;
+    color: #94a3b8;
+    font-size: 1.1rem;
+    position: fixed;
+    top: 0;
+    left: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+}
+
+/* --- PAGE CONTAINER --- */
+.pageContainer {
+    min-height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    background: #0a0e1a;
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', system-ui, sans-serif;
+}
+
+/* --- VIDEO BACKGROUND --- */
+.videoBackground {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    transform: translate(-50%, -50%);
+    filter: blur(5px) brightness(0.6);
+    object-fit: cover;
+    z-index: 0;
+}
+
+/* --- OVERLAY --- */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(10, 14, 26, 0.5) 0%, rgba(10, 14, 26, 0.85) 100%);
+    z-index: 1;
+    opacity: 0.3;
+}
+
+/* --- PLAYER CONTAINER --- */
+.playerContainer {
+    position: relative;
+    z-index: 2;
+    width: min(480px, 90vw);
+    max-height: 75vh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: clamp(1rem, 2vh, 2rem) clamp(1rem, 2vw, 2rem);
+    background: rgba(15, 23, 42, 0.75);
+    backdrop-filter: blur(32px) saturate(180%);
+    border: 1px solid rgba(14, 165, 233, 0.25);
+    border-radius: 24px; /* Change to clip-path for squircle */
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.5),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    
+    scrollbar-width: thin;
+    scrollbar-color: rgba(14, 165, 233, 0.3) transparent;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+.playerContainer::-webkit-scrollbar {
+    width: 6px;
+}
+
+.playerContainer::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.playerContainer::-webkit-scrollbar-thumb {
+    background: rgba(14, 165, 233, 0.3);
+    border-radius: 3px;
+}
+
+.playerContainer::-webkit-scrollbar-thumb:hover {
+    background: rgba(14, 165, 233, 0.5);
+}

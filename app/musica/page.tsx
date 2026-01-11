@@ -1,6 +1,6 @@
 "use client"
 import React, { useRef, useState, useEffect } from "react";
-import styles from './MusicPlayer.module.css';
+import styles from './style/MusicPlayer.module.css';
 
 interface Song {
     _id: string;
@@ -18,19 +18,19 @@ interface Song {
 export default function MusicaPage() {
     const audioRef = useRef<HTMLAudioElement>(null);
     const videoRef = useRef<HTMLVideoElement>(null);
+    const isReversingRef = useRef(false);
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
-    const [volume, setVolume] = useState(1); // Volume da 0 a 1
+    const [volume, setVolume] = useState(1);
+    const [showInfo, setShowInfo] = useState(false);
     const analyserRef = useRef<AnalyserNode | null>(null);
     const audioContextRef = useRef<AudioContext | null>(null);
 
-    // State per playlist
     const [songs, setSongs] = useState<Song[]>([]);
     const [currentSongIndex, setCurrentSongIndex] = useState(0);
     const [loading, setLoading] = useState(true);
 
-    // Fetch canzoni dal database
     useEffect(() => {
         async function fetchSongs() {
             try {
@@ -52,7 +52,6 @@ export default function MusicaPage() {
         fetchSongs();
     }, []);
 
-    // Reload audio quando cambia canzone
     useEffect(() => {
         if (audioRef.current && songs.length > 0) {
             audioRef.current.load();
@@ -62,6 +61,12 @@ export default function MusicaPage() {
             if (isPlaying) {
                 audioRef.current.play().catch(console.error);
             }
+        }
+
+        if (videoRef.current && songs.length > 0) {
+            isReversingRef.current = false;
+            videoRef.current.load();
+            videoRef.current.play().catch(console.error);
         }
     }, [currentSongIndex, songs]);
 
@@ -90,6 +95,44 @@ export default function MusicaPage() {
             setupAudio();
         }
     }, [currentSongIndex, songs]);
+
+    // REVERSE LOOP DEL VIDEO
+    useEffect(() => {
+        const video = videoRef.current;
+        if (!video) return;
+
+        let animationFrameId: number;
+
+        const reversePlay = () => {
+            if (!video) return;
+
+            if (video.currentTime <= 0.03) {
+                isReversingRef.current = false;
+                video.currentTime = 0;
+                video.play().catch(console.error);
+            } else {
+                video.currentTime = Math.max(0, video.currentTime - 0.033);
+                animationFrameId = requestAnimationFrame(reversePlay);
+            }
+        };
+
+        const handleTimeUpdate = () => {
+            if (!isReversingRef.current && video.currentTime >= video.duration - 0.03) {
+                isReversingRef.current = true;
+                video.pause();
+                animationFrameId = requestAnimationFrame(reversePlay);
+            }
+        };
+
+        video.addEventListener('timeupdate', handleTimeUpdate);
+
+        return () => {
+            video.removeEventListener('timeupdate', handleTimeUpdate);
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+        };
+    }, [currentSongIndex]);
 
     const togglePlay = async () => {
         if (!audioRef.current || !audioContextRef.current) return;
@@ -133,7 +176,6 @@ export default function MusicaPage() {
         }
     };
 
-    // Imposta il volume quando l'audio viene caricato
     useEffect(() => {
         if (audioRef.current) {
             audioRef.current.volume = volume;
@@ -185,24 +227,19 @@ export default function MusicaPage() {
 
     return (
         <div className={styles.pageContainer}>
-            {/* Video background blurrato */}
             <video
                 ref={videoRef}
                 className={styles.videoBackground}
                 src={currentSong?.visualVideo || '/canvas/swagtakes.mp4'}
                 autoPlay
-                loop
                 muted
                 playsInline
-                key={currentSongIndex} // Forza reload quando cambia canzone
+                key={currentSongIndex}
             />
 
-            {/* Overlay scuro */}
             <div className={styles.overlay}></div>
 
-            {/* Player glassmorphism */}
             <div className={styles.playerContainer}>
-                {/* Lista canzoni */}
                 <div className={styles.playlistContainer}>
                     <div className={styles.playlistHeader}>
                         <h3>SWAG TAKES</h3>
@@ -232,9 +269,7 @@ export default function MusicaPage() {
                     </div>
                 </div>
 
-                {/* Info canzone */}
                 <div className={styles.songInfo}>
-                    {/* Cover Image */}
                     <div className={styles.coverContainer}>
                         <img
                             src={currentSong.coverImage || '/images/swagtakes.png'}
@@ -243,17 +278,62 @@ export default function MusicaPage() {
                         />
                     </div>
 
-                    <h1 className={styles.songTitle}>{currentSong.title}</h1>
-                    <p className={styles.songArtist}>{currentSong.artist}</p>
-                    {currentSong.producer && (
-                        <p className={styles.songProducer}>prod. {currentSong.producer}</p>
-                    )}
-                    {currentSong.album && (
-                        <p className={styles.songAlbum}>{currentSong.album}</p>
-                    )}
+                    <div className={styles.songHeader}>
+                        <div>
+                            <h1 className={styles.songTitle}>{currentSong.title}</h1>
+                            <p className={styles.songArtist}>{currentSong.artist}</p>
+                        </div>
+                        <button
+                            onClick={() => setShowInfo(!showInfo)}
+                            className={styles.infoBtn}
+                            aria-label="Info"
+                        >
+                            <img src="/ico/info.png" alt="Info" width="24" height="24" />
+                        </button>
+                    </div>
                 </div>
 
-                {/* Audio element */}
+                {/* Info Modal */}
+                {showInfo && (
+                    <div className={styles.infoModal}>
+                        <div className={styles.infoContent}>
+                            <button
+                                onClick={() => setShowInfo(false)}
+                                className={styles.closeBtn}
+                            >
+                                <img src="/ico/x.png" alt="Close" width="20" height="20" />
+                            </button>
+                            <h3>Track Info</h3>
+                            <div className={styles.infoRow}>
+                                <span className={styles.infoLabel}>Title</span>
+                                <span className={styles.infoValue}>{currentSong.title}</span>
+                            </div>
+                            <div className={styles.infoRow}>
+                                <span className={styles.infoLabel}>Artist</span>
+                                <span className={styles.infoValue}>{currentSong.artist}</span>
+                            </div>
+                            {currentSong.producer && (
+                                <div className={styles.infoRow}>
+                                    <span className={styles.infoLabel}>Producer</span>
+                                    <span className={styles.infoValue}>{currentSong.producer}</span>
+                                </div>
+                            )}
+                            {currentSong.album && (
+                                <div className={styles.infoRow}>
+                                    <span className={styles.infoLabel}>Album</span>
+                                    <span className={styles.infoValue}>{currentSong.album}</span>
+                                </div>
+                            )}
+                            {currentSong.duration && (
+                                <div className={styles.infoRow}>
+                                    <span className={styles.infoLabel}>Duration</span>
+                                    <span className={styles.infoValue}>{currentSong.duration}</span>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
+
                 <audio
                     ref={audioRef}
                     src={currentSong.file}
@@ -289,7 +369,6 @@ export default function MusicaPage() {
                     }}
                 />
 
-                {/* Progress bar */}
                 <div className={styles.progressContainer}>
                     <div className={styles.progressWrapper}>
                         <div
@@ -313,7 +392,6 @@ export default function MusicaPage() {
                     </div>
                 </div>
 
-                {/* Controlli */}
                 <div className={styles.controls}>
                     <button
                         onClick={prevSong}
@@ -353,7 +431,6 @@ export default function MusicaPage() {
                     </button>
                 </div>
 
-                {/* Volume Control */}
                 <div className={styles.volumeContainer}>
                     <div
                         className={styles.volumeIcon}
@@ -401,11 +478,6 @@ export default function MusicaPage() {
                         />
                     </div>
                     <span className={styles.volumePercent}>{Math.round(volume * 100)}%</span>
-                </div>
-
-                {/* Track counter */}
-                <div className={styles.trackCounter}>
-                    Track {currentSongIndex + 1} of {songs.length}
                 </div>
             </div>
         </div>

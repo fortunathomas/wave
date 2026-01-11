@@ -1,0 +1,198 @@
+/* ============================================
+   CONTROLS STYLES
+   Progress bar, play/pause/skip buttons
+   ============================================ */
+
+/* --- PROGRESS BAR SECTION --- */
+.progressContainer {
+    margin-bottom: clamp(0.75rem, 1.5vh, 1.5rem);
+}
+
+/* --- PROGRESS WRAPPER --- */
+.progressWrapper {
+    position: relative;
+    width: 100%;
+    height: 8px;
+    margin-bottom: 0.6rem;
+}
+
+/* --- PROGRESS FILL (blue bar) --- */
+.progressFill {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 8px;
+    background: linear-gradient(90deg, #0ea5e9 0%, #06b6d4 100%);
+    border-radius: 4px;
+    pointer-events: none;
+    z-index: 1;
+    box-shadow: 0 0 12px rgba(14, 165, 233, 0.4);
+}
+
+/* --- PROGRESS BAR INPUT --- */
+.progressBar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 8px;
+    -webkit-appearance: none;
+    appearance: none;
+    background: rgba(30, 41, 59, 0.8);
+    border-radius: 4px;
+    outline: none;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.progressBar::-webkit-slider-track {
+    width: 100%;
+    height: 8px;
+    background: transparent;
+    border-radius: 4px;
+}
+
+.progressBar::-moz-range-track {
+    width: 100%;
+    height: 8px;
+    background: transparent;
+    border-radius: 4px;
+}
+
+/* --- PROGRESS BAR THUMB (draggable circle) --- */
+.progressBar::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    background: #0ea5e9;
+    border: 2px solid #0a0e1a;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 
+        0 2px 8px rgba(14, 165, 233, 0.5),
+        0 0 0 4px rgba(14, 165, 233, 0.15);
+    transition: all 0.15s ease;
+    margin-top: -5px;
+}
+
+.progressBar::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+    box-shadow: 
+        0 2px 12px rgba(14, 165, 233, 0.6),
+        0 0 0 6px rgba(14, 165, 233, 0.2);
+}
+
+.progressBar::-webkit-slider-thumb:active {
+    transform: scale(1.05);
+}
+
+.progressBar::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    background: #0ea5e9;
+    border: 2px solid #0a0e1a;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 
+        0 2px 8px rgba(14, 165, 233, 0.5),
+        0 0 0 4px rgba(14, 165, 233, 0.15);
+    transition: all 0.15s ease;
+}
+
+.progressBar::-moz-range-thumb:hover {
+    transform: scale(1.15);
+    box-shadow: 
+        0 2px 12px rgba(14, 165, 233, 0.6),
+        0 0 0 6px rgba(14, 165, 233, 0.2);
+}
+
+.progressBar::-moz-range-thumb:active {
+    transform: scale(1.05);
+}
+
+.progressBar::-moz-range-progress {
+    background: #0ea5e9;
+    height: 8px;
+    border-radius: 4px;
+}
+
+.progressBar:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.progressBar:disabled::-webkit-slider-thumb,
+.progressBar:disabled::-moz-range-thumb {
+    cursor: not-allowed;
+}
+
+/* --- TIME DISPLAY (current / total) --- */
+.timeDisplay {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #94a3b8;
+    font-variant-numeric: tabular-nums;
+}
+
+/* --- CONTROLS SECTION (prev/play/next buttons) --- */
+.controls {
+    display: flex;
+    gap: 0.875rem;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: clamp(0.75rem, 1.5vh, 1.25rem);
+}
+
+/* --- CONTROL BUTTON BASE --- */
+.controlBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    border-radius: 16px;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s ease;
+    color: currentColor;
+}
+
+/* --- PRIMARY BUTTON (play/pause) --- */
+.controlBtn.primary {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+    color: #ffffff;
+    box-shadow: 0 4px 16px rgba(14, 165, 233, 0.3);
+}
+
+.controlBtn.primary:hover:not(:disabled) {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(14, 165, 233, 0.4);
+}
+
+.controlBtn.primary:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+/* --- SECONDARY BUTTONS (prev/next) --- */
+.controlBtn.secondary {
+    width: 48px;
+    height: 48px;
+    background: rgba(14, 165, 233, 0.1);
+    color: #0ea5e9;
+    border: 1px solid rgba(14, 165, 233, 0.2);
+}
+
+.controlBtn.secondary:hover:not(:disabled) {
+    background: rgba(14, 165, 233, 0.2);
+    border-color: rgba(14, 165, 233, 0.3);
+}
+
+/* --- DISABLED STATE --- */
+.controlBtn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
