@@ -205,7 +205,7 @@ export default function MusicaPage() {
                 {/* Lista canzoni */}
                 <div className={styles.playlistContainer}>
                     <div className={styles.playlistHeader}>
-                        <h3>Playlist</h3>
+                        <h3>SWAG TAKES</h3>
                         <span className={styles.trackCount}>{songs.length} tracks</span>
                     </div>
                     <div className={styles.playlistScroll}>
