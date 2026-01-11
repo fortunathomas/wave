@@ -1,14 +1,11 @@
-// Script per popolare il database con le tue canzoni
+// Script per popolare il database
 // Esegui: npx tsx scripts/seedSongs.ts
 
-// IMPORTANTE: dotenv DEVE essere prima di tutto
 import dotenv from 'dotenv';
 import path from 'path';
 
-// Carica .env.local dalla root del progetto (Next.js usa .env.local)
 dotenv.config({ path: path.join(__dirname, '..', '.env.local') });
 
-// Importiamo mongoose e il modello direttamente
 import mongoose from 'mongoose';
 import Song from '../app/models/Song';
 
