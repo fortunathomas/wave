@@ -21,16 +21,15 @@ export default function MusicaPage() {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
-    const [volume, setVolume] = useState(1); // Volume da 0 a 1
+    const [volume, setVolume] = useState(1);
+    const [videoDirection, setVideoDirection] = useState<'forward' | 'reverse'>('forward');
     const analyserRef = useRef<AnalyserNode | null>(null);
     const audioContextRef = useRef<AudioContext | null>(null);
 
-    // State per playlist
     const [songs, setSongs] = useState<Song[]>([]);
     const [currentSongIndex, setCurrentSongIndex] = useState(0);
     const [loading, setLoading] = useState(true);
 
-    // Fetch canzoni dal database
     useEffect(() => {
         async function fetchSongs() {
             try {
@@ -52,7 +51,6 @@ export default function MusicaPage() {
         fetchSongs();
     }, []);
 
-    // Reload audio quando cambia canzone
     useEffect(() => {
         if (audioRef.current && songs.length > 0) {
             audioRef.current.load();
@@ -133,12 +131,48 @@ export default function MusicaPage() {
         }
     };
 
-    // Imposta il volume quando l'audio viene caricato
     useEffect(() => {
         if (audioRef.current) {
             audioRef.current.volume = volume;
         }
     }, [volume, currentSongIndex]);
+
+    // REVERSE LOOP DEL VIDEO
+    useEffect(() => {
+        const video = videoRef.current;
+        if (!video) return;
+
+        let animationFrameId: number;
+
+        const reversePlay = () => {
+            if (video.currentTime <= 0) {
+                setVideoDirection('forward');
+                video.play();
+            } else {
+                video.currentTime = Math.max(0, video.currentTime - 0.033);
+                animationFrameId = requestAnimationFrame(reversePlay);
+            }
+        };
+
+        const handleTimeUpdate = () => {
+            if (videoDirection === 'forward' && video.currentTime >= video.duration - 0.1) {
+                setVideoDirection('reverse');
+                video.pause();
+                animationFrameId = requestAnimationFrame(reversePlay);
+            }
+        };
+
+        if (videoDirection === 'forward') {
+            video.addEventListener('timeupdate', handleTimeUpdate);
+        }
+
+        return () => {
+            video.removeEventListener('timeupdate', handleTimeUpdate);
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId);
+            }
+        };
+    }, [videoDirection]);
 
     const formatTime = (time: number) => {
         if (!time || isNaN(time)) return '0:00';
@@ -185,24 +219,24 @@ export default function MusicaPage() {
 
     return (
         <div className={styles.pageContainer}>
-            {/* Video background blurrato */}
             <video
                 ref={videoRef}
                 className={styles.videoBackground}
                 src={currentSong?.visualVideo || '/canvas/swagtakes.mp4'}
                 autoPlay
-                loop
                 muted
                 playsInline
-                key={currentSongIndex} // Forza reload quando cambia canzone
+                onLoadedMetadata={() => {
+                    if (videoRef.current) {
+                        setVideoDirection('forward');
+                    }
+                }}
+                key={currentSongIndex}
             />
 
-            {/* Overlay scuro */}
             <div className={styles.overlay}></div>
 
-            {/* Player glassmorphism */}
             <div className={styles.playerContainer}>
-                {/* Lista canzoni */}
                 <div className={styles.playlistContainer}>
                     <div className={styles.playlistHeader}>
                         <h3>Playlist</h3>
@@ -232,9 +266,7 @@ export default function MusicaPage() {
                     </div>
                 </div>
 
-                {/* Info canzone */}
                 <div className={styles.songInfo}>
-                    {/* Cover Image */}
                     <div className={styles.coverContainer}>
                         <img
                             src={currentSong.coverImage || '/images/swagtakes.png'}
@@ -253,7 +285,6 @@ export default function MusicaPage() {
                     )}
                 </div>
 
-                {/* Audio element */}
                 <audio
                     ref={audioRef}
                     src={currentSong.file}
@@ -289,7 +320,6 @@ export default function MusicaPage() {
                     }}
                 />
 
-                {/* Progress bar */}
                 <div className={styles.progressContainer}>
                     <div className={styles.progressWrapper}>
                         <div
@@ -313,7 +343,6 @@ export default function MusicaPage() {
                     </div>
                 </div>
 
-                {/* Controlli */}
                 <div className={styles.controls}>
                     <button
                         onClick={prevSong}
@@ -353,7 +382,6 @@ export default function MusicaPage() {
                     </button>
                 </div>
 
-                {/* Volume Control */}
                 <div className={styles.volumeContainer}>
                     <div
                         className={styles.volumeIcon}
@@ -403,7 +431,6 @@ export default function MusicaPage() {
                     <span className={styles.volumePercent}>{Math.round(volume * 100)}%</span>
                 </div>
 
-                {/* Track counter */}
                 <div className={styles.trackCounter}>
                     Track {currentSongIndex + 1} of {songs.length}
                 </div>
