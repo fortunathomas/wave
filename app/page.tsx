@@ -43,7 +43,7 @@ export default function LoginPage() {
     return (
         <div>
             <form onSubmit={handleLogin}>
-                <label htmlFor="password">Inserisci la password</label>
+                <label htmlFor="password">Password</label>
                 <input
                     type="password"
                     id="password"
