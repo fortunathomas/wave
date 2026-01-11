@@ -1,0 +1,117 @@
+/* ============================================
+   INFO MODAL STYLES
+   Popup that shows song metadata
+   ============================================ */
+
+/* --- MODAL OVERLAY --- */
+.infoModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* --- MODAL CONTENT BOX --- */
+.infoContent {
+    position: relative;
+    background: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(32px);
+    border: 1px solid rgba(14, 165, 233, 0.3);
+    border-radius: 24px; /* Change to clip-path for squircle */
+    padding: 2rem;
+    max-width: 400px;
+    width: 100%;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- CLOSE BUTTON --- */
+.closeBtn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    background: rgba(148, 163, 184, 0.15);
+    color: #e2e8f0;
+    border-radius: 50%;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.closeBtn:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
+}
+
+.closeBtn img {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+
+/* --- MODAL TITLE --- */
+.infoContent h3 {
+    margin: 0 0 1.5rem 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #f8fafc;
+}
+
+/* --- INFO ROW (label + value) --- */
+.infoRow {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(14, 165, 233, 0.1);
+}
+
+.infoRow:last-child {
+    border-bottom: none;
+}
+
+/* --- INFO LABEL --- */
+.infoLabel {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: #94a3b8;
+}
+
+/* --- INFO VALUE --- */
+.infoValue {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    text-align: right;
+}

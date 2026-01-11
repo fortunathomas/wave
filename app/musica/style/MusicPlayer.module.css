@@ -1,0 +1,36 @@
+/* ============================================
+   MUSIC PLAYER - MASTER CSS
+   Imports all modular stylesheets
+   
+   SEARCH GUIDE:
+   - Base styles → Base.module.css
+   - Playlist → Playlist.module.css
+   - Song info/cover → SongInfo.module.css
+   - Info modal → InfoModal.module.css
+   - Controls/progress → Controls.module.css
+   - Volume → Volume.module.css
+   - Mobile responsive → Responsive.module.css
+   ============================================ */
+
+@import './Base.module.css';
+@import './Playlist.module.css';
+@import './SongInfo.module.css';
+@import './InfoModal.module.css';
+@import './Controls.module.css';
+@import './Volume.module.css';
+@import './Responsive.module.css';
+
+/* 
+   HOW TO SEARCH:
+   
+   1. LOADING STATE → Base.module.css (.loadingContainer)
+   2. PLAYLIST → Playlist.module.css (.playlistContainer, .playlistItem)
+   3. COVER IMAGE → SongInfo.module.css (.coverContainer)
+   4. SONG TITLE → SongInfo.module.css (.songTitle)
+   5. INFO BUTTON → SongInfo.module.css (.infoBtn)
+   6. INFO MODAL → InfoModal.module.css (.infoModal, .infoContent)
+   7. PROGRESS BAR → Controls.module.css (.progressBar, .progressFill)
+   8. PLAY BUTTON → Controls.module.css (.controlBtn.primary)
+   9. VOLUME SLIDER → Volume.module.css (.volumeSlider, .volumeFill)
+   10. MOBILE STYLES → Responsive.module.css (@media queries)
+*/

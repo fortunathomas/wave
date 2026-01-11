@@ -1,0 +1,160 @@
+/* ============================================
+   PLAYLIST STYLES
+   Song list, tracks, playing indicator
+   ============================================ */
+
+/* --- PLAYLIST CONTAINER --- */
+.playlistContainer {
+    margin-bottom: clamp(0.75rem, 1.5vh, 1.5rem);
+    background: rgba(10, 14, 26, 0.4);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(14, 165, 233, 0.2);
+    border-radius: 20px; /* Change to clip-path for squircle */
+    overflow: hidden;
+}
+
+/* --- PLAYLIST HEADER --- */
+.playlistHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(14, 165, 233, 0.15);
+}
+
+.playlistHeader h3 {
+    margin: 0;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #94a3b8;
+    letter-spacing: 0.08em;
+}
+
+.trackCount {
+    font-size: 0.8rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+/* --- PLAYLIST SCROLL AREA --- */
+.playlistScroll {
+    max-height: clamp(100px, 15vh, 180px);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(14, 165, 233, 0.3) transparent;
+}
+
+.playlistScroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.playlistScroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.playlistScroll::-webkit-scrollbar-thumb {
+    background: rgba(14, 165, 233, 0.3);
+    border-radius: 3px;
+}
+
+.playlistScroll::-webkit-scrollbar-thumb:hover {
+    background: rgba(14, 165, 233, 0.5);
+}
+
+/* --- PLAYLIST ITEM --- */
+.playlistItem {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.875rem 1.25rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid rgba(14, 165, 233, 0.08);
+}
+
+.playlistItem:last-child {
+    border-bottom: none;
+}
+
+.playlistItem:hover {
+    background: rgba(14, 165, 233, 0.08);
+}
+
+.playlistItem.active {
+    background: rgba(14, 165, 233, 0.15);
+    border-left: 3px solid #0ea5e9;
+    padding-left: calc(1.25rem - 3px);
+}
+
+/* --- TRACK NUMBER --- */
+.trackNumber {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #64748b;
+    min-width: 24px;
+    text-align: center;
+}
+
+.playlistItem.active .trackNumber {
+    color: #0ea5e9;
+}
+
+/* --- TRACK INFO --- */
+.trackInfo {
+    flex: 1;
+    min-width: 0;
+}
+
+.trackTitle {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #e2e8f0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 0.15rem;
+}
+
+.playlistItem.active .trackTitle {
+    color: #0ea5e9;
+}
+
+.trackArtist {
+    font-size: 0.8rem;
+    color: #94a3b8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* --- PLAYING INDICATOR (animated bars) --- */
+.playingIndicator {
+    display: flex;
+    gap: 3px;
+    align-items: flex-end;
+    height: 16px;
+}
+
+.playingIndicator .bar {
+    width: 3px;
+    background: #0ea5e9;
+    border-radius: 2px;
+    animation: playing 0.8s ease-in-out infinite;
+}
+
+.playingIndicator .bar:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.playingIndicator .bar:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.playingIndicator .bar:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes playing {
+    0%, 100% { height: 4px; }
+    50% { height: 14px; }
+}
