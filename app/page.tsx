@@ -13,7 +13,6 @@ export default function LoginPage() {
         e.preventDefault();
 
         if (!password) {
-            alert("Inserisci la password");
             return;
         }
 
@@ -29,7 +28,6 @@ export default function LoginPage() {
             const data = await res.json();
 
             if (res.ok) {
-                // Cookie settato automaticamente dal server
                 router.push("/musica");
             } else {
                 alert(data.error || "Password errata");
@@ -45,13 +43,15 @@ export default function LoginPage() {
     return (
         <div>
             <form onSubmit={handleLogin}>
-                <label htmlFor="password">Password</label>
+                <label htmlFor="password">Inserisci la password</label>
                 <input
                     type="password"
                     id="password"
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                     disabled={loading}
+                    placeholder="••••••••"
+                    autoFocus
                 />
                 <button type="submit" disabled={loading}>
                     {loading ? "Checking..." : "Login"}
