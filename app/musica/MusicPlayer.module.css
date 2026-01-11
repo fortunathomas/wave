@@ -645,11 +645,51 @@
 /* Responsive */
 @media (max-width: 640px) {
     .playerContainer {
-        padding: 2rem 1.5rem;
+        padding: 1.5rem 1.25rem;
+        max-height: 95vh;
+        overflow-y: auto;
+    }
+
+    .playlistContainer {
+        margin-bottom: 1.25rem;
+    }
+
+    .playlistScroll {
+        max-height: 140px;
+    }
+
+    .coverContainer {
+        width: 140px;
+        height: 140px;
+        margin-bottom: 1rem;
+    }
+
+    .songInfo {
+        margin-bottom: 1.5rem;
     }
 
     .songTitle {
-        font-size: 1.5rem;
+        font-size: 1.35rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .songArtist {
+        font-size: 1rem;
+        margin-bottom: 0.35rem;
+    }
+
+    .songProducer,
+    .songAlbum {
+        font-size: 0.8rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .progressContainer {
+        margin-bottom: 1.25rem;
+    }
+
+    .controls {
+        margin-bottom: 1rem;
     }
 
     .controlBtn.primary {
@@ -660,5 +700,50 @@
     .controlBtn.secondary {
         width: 44px;
         height: 44px;
+    }
+
+    .volumeContainer {
+        margin-bottom: 1rem;
+        padding: 0.75rem 1rem;
+    }
+
+    .trackCounter {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 640px) and (max-height: 800px) {
+    .playerContainer {
+        padding: 1rem;
+        max-height: 98vh;
+    }
+
+    .playlistScroll {
+        max-height: 100px;
+    }
+
+    .coverContainer {
+        width: 120px;
+        height: 120px;
+        margin-bottom: 0.75rem;
+    }
+
+    .songInfo {
+        margin-bottom: 1rem;
+    }
+
+    .songTitle {
+        font-size: 1.2rem;
+        margin-bottom: 0.4rem;
+    }
+
+    .songArtist {
+        font-size: 0.95rem;
+    }
+
+    .progressContainer,
+    .controls,
+    .volumeContainer {
+        margin-bottom: 0.75rem;
     }
 }
