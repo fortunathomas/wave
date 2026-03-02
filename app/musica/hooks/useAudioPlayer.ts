@@ -67,7 +67,7 @@ export function useAudioPlayer(songs: Song[], currentSongIndex: number) {
             audio.removeEventListener('ended', onEnded);
             audio.removeEventListener('error', onError);
         };
-    }, []);
+    }, [songs.length]); // re-run when songs load so audioRef.current is in the DOM
 
     // Song change: reset state, reload audio, play when ready if shouldPlay is true
     useEffect(() => {
