@@ -1,12 +1,16 @@
-// components/Playlist.tsx
 import React from 'react';
+import type { Song } from '../types';
+
+type Styles = { readonly [key: string]: string };
+
+// ─── Playlist ────────────────────────────────────────────────────────────────
 
 interface PlaylistProps {
-    songs: any[];
+    songs: Song[];
     currentSongIndex: number;
     isPlaying: boolean;
     onSongChange: (index: number) => void;
-    styles: any;
+    styles: Styles;
 }
 
 export function Playlist({ songs, currentSongIndex, isPlaying, onSongChange, styles }: PlaylistProps) {
@@ -42,11 +46,12 @@ export function Playlist({ songs, currentSongIndex, isPlaying, onSongChange, sty
     );
 }
 
-// components/SongInfo.tsx
+// ─── SongInfo ─────────────────────────────────────────────────────────────────
+
 interface SongInfoProps {
-    song: any;
+    song: Song;
     onInfoClick: () => void;
-    styles: any;
+    styles: Styles;
 }
 
 export function SongInfo({ song, onInfoClick, styles }: SongInfoProps) {
@@ -59,7 +64,6 @@ export function SongInfo({ song, onInfoClick, styles }: SongInfoProps) {
                     className={styles.coverImage}
                 />
             </div>
-
             <div className={styles.songHeader}>
                 <div>
                     <h1 className={styles.songTitle}>{song.title}</h1>
@@ -73,11 +77,12 @@ export function SongInfo({ song, onInfoClick, styles }: SongInfoProps) {
     );
 }
 
-// components/InfoModal.tsx
+// ─── InfoModal ────────────────────────────────────────────────────────────────
+
 interface InfoModalProps {
-    song: any;
+    song: Song;
     onClose: () => void;
-    styles: any;
+    styles: Styles;
 }
 
 export function InfoModal({ song, onClose, styles }: InfoModalProps) {
@@ -119,13 +124,14 @@ export function InfoModal({ song, onClose, styles }: InfoModalProps) {
     );
 }
 
-// components/ProgressBar.tsx
+// ─── ProgressBar ──────────────────────────────────────────────────────────────
+
 interface ProgressBarProps {
     currentTime: number;
     duration: number;
     onSeek: (e: React.ChangeEvent<HTMLInputElement>) => void;
     formatTime: (time: number) => string;
-    styles: any;
+    styles: Styles;
 }
 
 export function ProgressBar({ currentTime, duration, onSeek, formatTime, styles }: ProgressBarProps) {
@@ -155,7 +161,8 @@ export function ProgressBar({ currentTime, duration, onSeek, formatTime, styles 
     );
 }
 
-// components/Controls.tsx
+// ─── Controls ─────────────────────────────────────────────────────────────────
+
 interface ControlsProps {
     isPlaying: boolean;
     canGoPrev: boolean;
@@ -163,11 +170,10 @@ interface ControlsProps {
     onPrev: () => void;
     onPlay: () => void;
     onNext: () => void;
-    disabled: boolean;
-    styles: any;
+    styles: Styles;
 }
 
-export function Controls({ isPlaying, canGoPrev, canGoNext, onPrev, onPlay, onNext, disabled, styles }: ControlsProps) {
+export function Controls({ isPlaying, canGoPrev, canGoNext, onPrev, onPlay, onNext, styles }: ControlsProps) {
     return (
         <div className={styles.controls}>
             <button onClick={onPrev} disabled={!canGoPrev} className={`${styles.controlBtn} ${styles.secondary}`}>
@@ -176,7 +182,7 @@ export function Controls({ isPlaying, canGoPrev, canGoNext, onPrev, onPlay, onNe
                 </svg>
             </button>
 
-            <button onClick={onPlay} disabled={disabled} className={`${styles.controlBtn} ${styles.primary}`}>
+            <button onClick={onPlay} className={`${styles.controlBtn} ${styles.primary}`}>
                 {isPlaying ? (
                     <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                         <rect x="6" y="4" width="4" height="16" rx="1"/>
@@ -198,12 +204,13 @@ export function Controls({ isPlaying, canGoPrev, canGoNext, onPrev, onPlay, onNe
     );
 }
 
-// components/VolumeControl.tsx
+// ─── VolumeControl ────────────────────────────────────────────────────────────
+
 interface VolumeControlProps {
     volume: number;
     onVolumeChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     onToggleMute: () => void;
-    styles: any;
+    styles: Styles;
 }
 
 export function VolumeControl({ volume, onVolumeChange, onToggleMute, styles }: VolumeControlProps) {

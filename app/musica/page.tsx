@@ -1,7 +1,8 @@
 "use client"
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import styles from './style/MusicPlayer.module.css';
 import { useAudioPlayer, useVideoPlayer } from './hooks/useAudioPlayer';
+import type { Song } from './types';
 import {
     Playlist,
     SongInfo,
@@ -11,30 +12,16 @@ import {
     VolumeControl
 } from './components/UIComponents';
 
-interface Song {
-    _id: string;
-    title: string;
-    artist: string;
-    producer?: string;
-    album?: string;
-    coverImage?: string;
-    visualVideo?: string;
-    file: string;
-    duration?: string;
-    order: number;
-}
-
 export default function MusicaPage() {
     const [songs, setSongs] = useState<Song[]>([]);
     const [currentSongIndex, setCurrentSongIndex] = useState(0);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [showInfo, setShowInfo] = useState(false);
 
-    // Custom hooks
     const {
         audioRef,
         isPlaying,
-        setIsPlaying,
         currentTime,
         setCurrentTime,
         duration,
@@ -43,7 +30,8 @@ export default function MusicaPage() {
         togglePlay,
         handleSeek,
         handleVolumeChange,
-        toggleMute
+        toggleMute,
+        setShouldPlay,
     } = useAudioPlayer(songs, currentSongIndex);
 
     const { videoRef, nextVideoRef } = useVideoPlayer(currentSongIndex);
@@ -53,24 +41,22 @@ export default function MusicaPage() {
         async function fetchSongs() {
             try {
                 const res = await fetch('/api/songs');
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
                 const data = await res.json();
-
                 if (data.success && data.songs.length > 0) {
                     setSongs(data.songs);
                 } else {
-                    console.error('Nessuna canzone trovata');
+                    setError('Nessuna canzone trovata nel database.');
                 }
-            } catch (error) {
-                console.error('Errore caricamento canzoni:', error);
+            } catch {
+                setError('Impossibile caricare le canzoni. Controlla la connessione.');
             } finally {
                 setLoading(false);
             }
         }
-
         fetchSongs();
     }, []);
 
-    // Utility functions
     const formatTime = (time: number) => {
         if (!time || isNaN(time)) return '0:00';
         const mins = Math.floor(time / 60);
@@ -78,36 +64,44 @@ export default function MusicaPage() {
         return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
     };
 
-    const handleSongChange = (index: number) => {
+    // Clicking a song in the playlist: stop current playback, load new song (no autoplay)
+    const handleSongChange = useCallback((index: number) => {
+        setShouldPlay(false);
+        if (audioRef.current) audioRef.current.pause();
         setCurrentSongIndex(index);
-        setIsPlaying(false);
-    };
+    }, [setShouldPlay, audioRef]);
 
-    const nextSong = () => {
+    // Skip buttons: maintain current playback state (if playing, keep playing)
+    const nextSong = useCallback(() => {
+        setCurrentSongIndex(prev => (prev < songs.length - 1 ? prev + 1 : prev));
+    }, [songs.length]);
+
+    const prevSong = useCallback(() => {
+        setCurrentSongIndex(prev => (prev > 0 ? prev - 1 : prev));
+    }, []);
+
+    // Auto-advance at end of track: always autoplay next
+    const handleAutoNext = useCallback(() => {
         if (currentSongIndex < songs.length - 1) {
-            setCurrentSongIndex(currentSongIndex + 1);
+            setShouldPlay(true);
+            setCurrentSongIndex(prev => prev + 1);
         }
-    };
+    }, [currentSongIndex, songs.length, setShouldPlay]);
 
-    const prevSong = () => {
-        if (currentSongIndex > 0) {
-            setCurrentSongIndex(currentSongIndex - 1);
-        }
-    };
-
-    const handleAutoNext = () => {
-        setIsPlaying(false);
-        if (currentSongIndex < songs.length - 1) {
-            setTimeout(() => {
-                setCurrentSongIndex(currentSongIndex + 1);
-                setIsPlaying(true);
-            }, 500);
-        }
-    };
+    // Keyboard shortcuts: Space = play/pause, ← → = prev/next
+    useEffect(() => {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+            if (e.code === 'Space') { e.preventDefault(); togglePlay(); }
+            else if (e.code === 'ArrowRight') { e.preventDefault(); nextSong(); }
+            else if (e.code === 'ArrowLeft') { e.preventDefault(); prevSong(); }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [togglePlay, nextSong, prevSong]);
 
     const currentSong = songs[currentSongIndex];
 
-    // Loading state
     if (loading) {
         return (
             <div className={styles.loadingContainer}>
@@ -117,8 +111,15 @@ export default function MusicaPage() {
         );
     }
 
-    // Empty state
-    if (songs.length === 0) {
+    if (error) {
+        return (
+            <div className={styles.errorContainer}>
+                <p>{error}</p>
+            </div>
+        );
+    }
+
+    if (songs.length === 0 || !currentSong) {
         return (
             <div className={styles.errorContainer}>
                 <p>Nessuna canzone disponibile</p>
@@ -132,7 +133,7 @@ export default function MusicaPage() {
             <video
                 ref={videoRef}
                 className={styles.videoBackground}
-                src={currentSong?.visualVideo || '/canvas/swagtakes.mp4'}
+                src={currentSong.visualVideo || '/canvas/swagtakes.mp4'}
                 autoPlay
                 muted
                 playsInline
@@ -153,7 +154,6 @@ export default function MusicaPage() {
 
             <div className={styles.overlay}></div>
 
-            {/* Player */}
             <div className={styles.playerContainer}>
                 <Playlist
                     songs={songs}
@@ -165,7 +165,7 @@ export default function MusicaPage() {
 
                 <SongInfo
                     song={currentSong}
-                    onInfoClick={() => setShowInfo(!showInfo)}
+                    onInfoClick={() => setShowInfo(prev => !prev)}
                     styles={styles}
                 />
 
@@ -177,30 +177,19 @@ export default function MusicaPage() {
                     />
                 )}
 
-                {/* Audio element */}
+                {/* Audio element — src driven by currentSong */}
                 <audio
                     ref={audioRef}
                     src={currentSong.file}
                     preload="metadata"
                     onTimeUpdate={() => {
-                        if (audioRef.current) {
-                            setCurrentTime(audioRef.current.currentTime);
-                        }
+                        if (audioRef.current) setCurrentTime(audioRef.current.currentTime);
                     }}
                     onLoadedMetadata={() => {
-                        if (audioRef.current) {
-                            setDuration(audioRef.current.duration);
-                        }
-                    }}
-                    onCanPlay={() => {
-                        if (audioRef.current && !duration) {
-                            setDuration(audioRef.current.duration);
-                        }
+                        if (audioRef.current) setDuration(audioRef.current.duration);
                     }}
                     onDurationChange={() => {
-                        if (audioRef.current) {
-                            setDuration(audioRef.current.duration);
-                        }
+                        if (audioRef.current) setDuration(audioRef.current.duration);
                     }}
                     onEnded={handleAutoNext}
                 />
@@ -220,7 +209,6 @@ export default function MusicaPage() {
                     onPrev={prevSong}
                     onPlay={togglePlay}
                     onNext={nextSong}
-                    disabled={!duration}
                     styles={styles}
                 />
 
