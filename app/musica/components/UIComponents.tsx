@@ -6,28 +6,60 @@ type Styles = { readonly [key: string]: string };
 // ─── Playlist ────────────────────────────────────────────────────────────────
 
 interface PlaylistProps {
-    songs: Song[];
+    tracks: Array<{ song: Song; index: number; displayIndex: number }>;
     currentSongIndex: number;
     isPlaying: boolean;
     onSongChange: (index: number) => void;
+    selectedAlbum: string;
+    albums: string[];
+    onAlbumChange: (album: string) => void;
     styles: Styles;
 }
 
-export function Playlist({ songs, currentSongIndex, isPlaying, onSongChange, styles }: PlaylistProps) {
+export function Playlist({
+    tracks,
+    currentSongIndex,
+    isPlaying,
+    onSongChange,
+    selectedAlbum,
+    albums,
+    onAlbumChange,
+    styles,
+}: PlaylistProps) {
     return (
         <div className={styles.playlistContainer}>
             <div className={styles.playlistHeader}>
-                <h3>NO PRESSURE, NO DIAMONDS</h3>
-                <span className={styles.trackCount}>{songs.length} tracks</span>
+                <div className={styles.playlistHeaderText}>
+                    <h3>{selectedAlbum === 'all' ? 'TUTTI GLI ALBUM' : selectedAlbum.toUpperCase()}</h3>
+                    <span className={styles.trackCount}>{tracks.length} tracks</span>
+                </div>
+                <div className={styles.albumSelectWrap}>
+                    <label htmlFor="album-select" className={styles.albumLabel}>
+                        Album
+                    </label>
+                    <select
+                        id="album-select"
+                        value={selectedAlbum}
+                        onChange={(e) => onAlbumChange(e.target.value)}
+                        className={styles.albumSelect}
+                    >
+                        <option value="all">Tutti gli album</option>
+                        {albums.map((album) => (
+                            <option key={album} value={album}>
+                                {album}
+                            </option>
+                        ))}
+                    </select>
+                </div>
             </div>
             <div className={styles.playlistScroll}>
-                {songs.map((song, index) => (
+                {tracks.map(({ song, index, displayIndex }) => (
                     <div
                         key={song._id}
                         onClick={() => onSongChange(index)}
                         className={`${styles.playlistItem} ${index === currentSongIndex ? styles.active : ''}`}
                     >
-                        <div className={styles.trackNumber}>{index + 1}</div>
+                        <div className={styles.trackNumber}>{displayIndex + 1}</div>
                         <div className={styles.trackInfo}>
                             <div className={styles.trackTitle}>{song.title}</div>
                             <div className={styles.trackArtist}>{song.artist}</div>

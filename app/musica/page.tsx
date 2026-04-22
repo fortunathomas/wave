@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import styles from './style/MusicPlayer.module.css';
 import { useAudioPlayer, useVideoPlayer } from './hooks/useAudioPlayer';
 import type { Song } from './types';
@@ -15,9 +15,30 @@ import {
 export default function MusicaPage() {
     const [songs, setSongs] = useState<Song[]>([]);
     const [currentSongIndex, setCurrentSongIndex] = useState(0);
+    const [selectedAlbum, setSelectedAlbum] = useState('all');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [showInfo, setShowInfo] = useState(false);
+
+    const albums = useMemo(() => {
+        return Array.from(new Set(songs.map((song) => song.album).filter((album): album is string => Boolean(album))));
+    }, [songs]);
+
+    const visibleTracks = useMemo(() => {
+        const trackEntries = songs.map((song, index) => ({ song, index }));
+
+        if (selectedAlbum === 'all') {
+            return trackEntries.map((entry, displayIndex) => ({ ...entry, displayIndex }));
+        }
+
+        return trackEntries
+            .filter(({ song }) => song.album === selectedAlbum)
+            .map((entry, displayIndex) => ({ ...entry, displayIndex }));
+    }, [songs, selectedAlbum]);
+
+    const currentVisibleIndex = useMemo(() => {
+        return visibleTracks.findIndex(({ index }) => index === currentSongIndex);
+    }, [visibleTracks, currentSongIndex]);
 
     const {
         audioRef,
@@ -71,22 +92,54 @@ export default function MusicaPage() {
         setCurrentSongIndex(index);
     }, [setShouldPlay, audioRef]);
 
+    const handleAlbumChange = useCallback((album: string) => {
+        setSelectedAlbum(album);
+
+        if (album === 'all') {
+            return;
+        }
+
+        const currentSong = songs[currentSongIndex];
+        if (currentSong?.album === album) {
+            return;
+        }
+
+        const firstAlbumTrackIndex = songs.findIndex((song) => song.album === album);
+        if (firstAlbumTrackIndex >= 0) {
+            setShouldPlay(false);
+            if (audioRef.current) audioRef.current.pause();
+            setCurrentSongIndex(firstAlbumTrackIndex);
+        }
+    }, [audioRef, currentSongIndex, songs, setShouldPlay]);
+
     // Skip buttons: maintain current playback state (if playing, keep playing)
     const nextSong = useCallback(() => {
-        setCurrentSongIndex(prev => (prev < songs.length - 1 ? prev + 1 : prev));
-    }, [songs.length]);
+        if (visibleTracks.length === 0) return;
+
+        const nextVisibleIndex = currentVisibleIndex >= 0 ? currentVisibleIndex + 1 : 0;
+        if (nextVisibleIndex < visibleTracks.length) {
+            setCurrentSongIndex(visibleTracks[nextVisibleIndex].index);
+        }
+    }, [currentVisibleIndex, visibleTracks]);
 
     const prevSong = useCallback(() => {
-        setCurrentSongIndex(prev => (prev > 0 ? prev - 1 : prev));
-    }, []);
+        if (visibleTracks.length === 0) return;
+
+        const previousVisibleIndex = currentVisibleIndex >= 0 ? currentVisibleIndex - 1 : 0;
+        if (previousVisibleIndex >= 0) {
+            setCurrentSongIndex(visibleTracks[previousVisibleIndex].index);
+        }
+    }, [currentVisibleIndex, visibleTracks]);
 
     // Auto-advance at end of track: always autoplay next
     const handleAutoNext = useCallback(() => {
-        if (currentSongIndex < songs.length - 1) {
+        const nextVisibleIndex = currentVisibleIndex >= 0 ? currentVisibleIndex + 1 : 0;
+
+        if (nextVisibleIndex < visibleTracks.length) {
             setShouldPlay(true);
-            setCurrentSongIndex(prev => prev + 1);
+            setCurrentSongIndex(visibleTracks[nextVisibleIndex].index);
         }
-    }, [currentSongIndex, songs.length, setShouldPlay]);
+    }, [currentVisibleIndex, visibleTracks, setShouldPlay]);
 
     // Keyboard shortcuts: Space = play/pause, ← → = prev/next
     useEffect(() => {
@@ -156,10 +209,13 @@ export default function MusicaPage() {
 
             <div className={styles.playerContainer}>
                 <Playlist
-                    songs={songs}
+                    tracks={visibleTracks}
                     currentSongIndex={currentSongIndex}
                     isPlaying={isPlaying}
                     onSongChange={handleSongChange}
+                    selectedAlbum={selectedAlbum}
+                    albums={albums}
+                    onAlbumChange={handleAlbumChange}
                     styles={styles}
                 />
 
@@ -204,8 +260,8 @@ export default function MusicaPage() {
 
                 <Controls
                     isPlaying={isPlaying}
-                    canGoPrev={currentSongIndex > 0}
-                    canGoNext={currentSongIndex < songs.length - 1}
+                    canGoPrev={currentVisibleIndex > 0}
+                    canGoNext={currentVisibleIndex >= 0 ? currentVisibleIndex < visibleTracks.length - 1 : visibleTracks.length > 0}
                     onPrev={prevSong}
                     onPlay={togglePlay}
                     onNext={nextSong}
