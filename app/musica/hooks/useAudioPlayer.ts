@@ -230,6 +230,29 @@ export function useVideoPlayer(
         const audio = audioRef.current;
         if (!video || !audio) return;
 
+        const safePlay = () => {
+            return video.play().catch((error) => {
+                const message = error instanceof Error ? error.message : String(error);
+                const isPowerSavingPause =
+                    message.includes('video-only background media was paused to save power') ||
+                    message.includes('The play() request was interrupted');
+                const isExpectedPolicyError =
+                    error instanceof DOMException &&
+                    (error.name === 'NotAllowedError' || error.name === 'AbortError');
+
+                if (!isPowerSavingPause && !isExpectedPolicyError) {
+                    console.error('Video play error:', error);
+                }
+            });
+        };
+
+        const resumeOnVisibility = () => {
+            if (document.visibilityState === 'visible' && !audio.paused) {
+                syncTime();
+                void safePlay();
+            }
+        };
+
         const getTargetTime = () => Math.max(0, audio.currentTime + videoOffsetSec);
         let rafId: number | null = null;
 
@@ -249,7 +272,7 @@ export function useVideoPlayer(
 
         const onPlay = () => {
             syncTime();
-            video.play().catch(console.error);
+            void safePlay();
             if (rafId) cancelAnimationFrame(rafId);
             rafId = requestAnimationFrame(runTightSync);
         };
@@ -292,6 +315,7 @@ export function useVideoPlayer(
         audio.addEventListener('ratechange', onRateChange);
         audio.addEventListener('timeupdate', onTimeUpdate);
         audio.addEventListener('ended', onEnded);
+        document.addEventListener('visibilitychange', resumeOnVisibility);
 
         if (!audio.paused) {
             rafId = requestAnimationFrame(runTightSync);
@@ -305,6 +329,7 @@ export function useVideoPlayer(
             audio.removeEventListener('ratechange', onRateChange);
             audio.removeEventListener('timeupdate', onTimeUpdate);
             audio.removeEventListener('ended', onEnded);
+            document.removeEventListener('visibilitychange', resumeOnVisibility);
             if (rafId) {
                 cancelAnimationFrame(rafId);
             }
