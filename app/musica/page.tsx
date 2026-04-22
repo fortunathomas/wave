@@ -28,7 +28,6 @@ export default function MusicaPage() {
         setDuration,
         volume,
         togglePlay,
-        handleSeek,
         handleVolumeChange,
         toggleMute,
         setShouldPlay,
@@ -86,9 +85,16 @@ export default function MusicaPage() {
 
     // Link seek bar to both audio and video so they jump to the same second
     const handleSeekLinked = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        handleSeek(e);
-
         const seekTime = parseFloat(e.target.value);
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        // Ignore duplicate micro-seeks that can produce audible double clicks.
+        if (Math.abs(audio.currentTime - seekTime) >= 0.05) {
+            audio.currentTime = seekTime;
+        }
+        setCurrentTime(seekTime);
+
         const video = videoRef.current;
         if (!video) return;
 
@@ -100,7 +106,7 @@ export default function MusicaPage() {
         } else {
             video.pause();
         }
-    }, [handleSeek, videoRef, songs, currentSongIndex, audioRef]);
+    }, [videoRef, songs, currentSongIndex, audioRef, setCurrentTime]);
 
     // Auto-advance at end of track: always autoplay next
     const handleAutoNext = useCallback(() => {
