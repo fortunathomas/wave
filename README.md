@@ -1,4 +1,4 @@
-# sswagtho music player
+# wave
 
 A personal web music player built with Next.js, featuring a video background, playlist management, and a clean glassmorphism UI.
 

@@ -3,8 +3,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-    title: "Unlock",
-    description: "tho",
+    title: "wave",
+    description: "wave è un’applicazione web progettata per consentire l’ascolto di musica direttamente dal browser.",
     icons: {
         icon: 'public/favicon.ico',
     }
