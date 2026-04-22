@@ -168,7 +168,6 @@ export default function MusicaPage() {
                 key={currentSongIndex}
             />
 
-            {/* Preload next video (hidden) */}
             {currentSongIndex < songs.length - 1 && (
                 <video
                     ref={nextVideoRef}
@@ -204,7 +203,6 @@ export default function MusicaPage() {
                     />
                 )}
 
-                {/* Audio element — src driven by currentSong */}
                 <audio
                     ref={audioRef}
                     src={currentSong.file}
