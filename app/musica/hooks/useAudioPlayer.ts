@@ -5,6 +5,7 @@ export function useAudioPlayer(songs: Song[], currentSongIndex: number) {
     const audioRef = useRef<HTMLAudioElement>(null);
     const audioContextRef = useRef<AudioContext | null>(null);
     const analyserRef = useRef<AnalyserNode | null>(null);
+    const gainNodeRef = useRef<GainNode | null>(null);
 
     // Tracks whether we *want* to play — survives across async song changes
     const shouldPlayRef = useRef(false);
@@ -17,7 +18,12 @@ export function useAudioPlayer(songs: Song[], currentSongIndex: number) {
     const [volume, setVolume] = useState(() => {
         if (typeof window !== 'undefined') {
             const saved = localStorage.getItem('playerVolume');
-            return saved !== null ? parseFloat(saved) : 1;
+            if (saved !== null) {
+                const parsed = parseFloat(saved);
+                if (!isNaN(parsed) && parsed >= 0 && parsed <= 1) {
+                    return parsed;
+                }
+            }
         }
         return 1;
     });
@@ -29,16 +35,21 @@ export function useAudioPlayer(songs: Song[], currentSongIndex: number) {
             const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
             const audioContext = new AudioContextClass();
             const analyser = audioContext.createAnalyser();
+            const gainNode = audioContext.createGain();
             const source = audioContext.createMediaElementSource(audioRef.current);
-            source.connect(analyser);
+            source.connect(gainNode);
+            gainNode.connect(analyser);
             analyser.connect(audioContext.destination);
             analyser.fftSize = 256;
             audioContextRef.current = audioContext;
             analyserRef.current = analyser;
+            gainNodeRef.current = gainNode;
+            // Apply saved volume to the gainNode when it's created
+            gainNode.gain.value = volume;
         } catch (error) {
             console.error('Audio context setup error:', error);
         }
-    }, [songs]);
+    }, [songs, volume]);
 
     // Sync isPlaying with native audio element events — this is the source of truth
     useEffect(() => {
@@ -69,6 +80,12 @@ export function useAudioPlayer(songs: Song[], currentSongIndex: number) {
         };
     }, [songs.length]); // re-run when songs load so audioRef.current is in the DOM
 
+    // Reset playing state when song changes
+    useEffect(() => {
+        setIsPlaying(false);
+        shouldPlayRef.current = false;
+    }, [currentSongIndex]);
+
     // Song change: reset state, reload audio, play when ready if shouldPlay is true
     useEffect(() => {
         const audio = audioRef.current;
@@ -76,6 +93,7 @@ export function useAudioPlayer(songs: Song[], currentSongIndex: number) {
 
         setCurrentTime(0);
         setDuration(0);
+        audio.pause();
 
         const onCanPlay = () => {
             if (shouldPlayRef.current) {
@@ -97,8 +115,8 @@ export function useAudioPlayer(songs: Song[], currentSongIndex: number) {
 
     // Apply volume and persist to localStorage
     useEffect(() => {
-        if (audioRef.current) {
-            audioRef.current.volume = volume;
+        if (gainNodeRef.current) {
+            gainNodeRef.current.gain.value = volume;
         }
         localStorage.setItem('playerVolume', String(volume));
     }, [volume]);
