@@ -12,7 +12,7 @@ A personal web music player built with Next.js, featuring a video background, pl
 
 ## Features
 
-- Password-protected access
+- Direct access to the player (no password gate)
 - Video background with reverse loop animation
 - Playlist with animated playing indicator
 - Track info modal (title, artist, producer, album, duration)
@@ -27,7 +27,6 @@ A personal web music player built with Next.js, featuring a video background, pl
 ```
 app/
 ├── api/
-│   ├── login/route.ts       # Password auth (env var)
 │   └── songs/route.ts       # Reads data/songs.json
 ├── musica/
 │   ├── components/
@@ -39,7 +38,7 @@ app/
 │   └── page.tsx             # Main player page
 ├── globals.css
 ├── layout.tsx
-└── page.tsx                 # Login page
+└── page.tsx                 # Redirects to /musica
 data/
 └── songs.json               # Song catalog
 ```
