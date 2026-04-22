@@ -36,7 +36,7 @@ export default function MusicaPage() {
 
     const { videoRef, nextVideoRef } = useVideoPlayer(currentSongIndex);
 
-    // Fetch songs
+    // Fetch canzoni
     useEffect(() => {
         async function fetchSongs() {
             try {
