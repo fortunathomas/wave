@@ -1,4 +1,5 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
+import type { RefObject } from 'react';
 import type { Song } from '../types';
 
 export function useAudioPlayer(songs: Song[], currentSongIndex: number) {
@@ -178,10 +179,13 @@ export function useAudioPlayer(songs: Song[], currentSongIndex: number) {
     };
 }
 
-export function useVideoPlayer(currentSongIndex: number) {
+export function useVideoPlayer(
+    currentSongIndex: number,
+    audioRef: RefObject<HTMLAudioElement | null>,
+    videoOffsetSec = 0
+) {
     const videoRef = useRef<HTMLVideoElement>(null);
     const nextVideoRef = useRef<HTMLVideoElement>(null);
-    const isReversingRef = useRef(false);
 
     // Preload next video
     useEffect(() => {
@@ -190,59 +194,122 @@ export function useVideoPlayer(currentSongIndex: number) {
         }
     }, [currentSongIndex]);
 
-    // Fade out → load new → fade in on song change
+    // Song change: reload current video and align to the current audio position
     useEffect(() => {
         const video = videoRef.current;
+        const audio = audioRef.current;
         if (!video) return;
 
-        video.style.opacity = '0';
+        const alignToAudio = () => {
+            const now = audio?.currentTime ?? 0;
+            if (Math.abs(video.currentTime - now) > 0.2) {
+                video.currentTime = now;
+            }
+        };
 
-        const timer = setTimeout(() => {
-            isReversingRef.current = false;
-            video.load();
-            video.play().catch(console.error);
-
-            video.addEventListener('canplay', () => {
-                video.style.opacity = '1';
-            }, { once: true });
-        }, 300);
-
-        return () => clearTimeout(timer);
-    }, [currentSongIndex]);
-
-    // Reverse loop at end of video
-    useEffect(() => {
-        const video = videoRef.current;
-        if (!video) return;
-
-        let animationFrameId: number;
-
-        const reversePlay = () => {
-            if (!video) return;
-            if (video.currentTime <= 0.03) {
-                isReversingRef.current = false;
-                video.currentTime = 0;
+        const onCanPlay = () => {
+            alignToAudio();
+            if (audio && !audio.paused) {
                 video.play().catch(console.error);
             } else {
-                video.currentTime = Math.max(0, video.currentTime - 0.033);
-                animationFrameId = requestAnimationFrame(reversePlay);
-            }
-        };
-
-        const handleTimeUpdate = () => {
-            if (!isReversingRef.current && video.currentTime >= video.duration - 0.03) {
-                isReversingRef.current = true;
                 video.pause();
-                animationFrameId = requestAnimationFrame(reversePlay);
             }
         };
 
-        video.addEventListener('timeupdate', handleTimeUpdate);
+        video.addEventListener('canplay', onCanPlay, { once: true });
+        video.load();
+
         return () => {
-            video.removeEventListener('timeupdate', handleTimeUpdate);
-            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            video.removeEventListener('canplay', onCanPlay);
         };
-    }, [currentSongIndex]);
+    }, [currentSongIndex, audioRef]);
+
+    // Keep video transport synced to audio transport (play/pause/seek/clock drift)
+    useEffect(() => {
+        const video = videoRef.current;
+        const audio = audioRef.current;
+        if (!video || !audio) return;
+
+        const getTargetTime = () => Math.max(0, audio.currentTime + videoOffsetSec);
+        let rafId: number | null = null;
+
+        const syncTime = () => {
+            const target = getTargetTime();
+            if (Math.abs(video.currentTime - target) > 0.06) {
+                video.currentTime = target;
+            }
+        };
+
+        const runTightSync = () => {
+            syncTime();
+            if (!audio.paused && !audio.ended) {
+                rafId = requestAnimationFrame(runTightSync);
+            }
+        };
+
+        const onPlay = () => {
+            syncTime();
+            video.play().catch(console.error);
+            if (rafId) cancelAnimationFrame(rafId);
+            rafId = requestAnimationFrame(runTightSync);
+        };
+
+        const onPause = () => {
+            video.pause();
+            if (rafId) {
+                cancelAnimationFrame(rafId);
+                rafId = null;
+            }
+        };
+
+        const onSeek = () => {
+            syncTime();
+        };
+
+        const onRateChange = () => {
+            video.playbackRate = audio.playbackRate;
+        };
+
+        const onTimeUpdate = () => {
+            syncTime();
+        };
+
+        const onEnded = () => {
+            video.pause();
+            if (rafId) {
+                cancelAnimationFrame(rafId);
+                rafId = null;
+            }
+        };
+
+        onRateChange();
+        syncTime();
+
+        audio.addEventListener('play', onPlay);
+        audio.addEventListener('pause', onPause);
+        audio.addEventListener('seeking', onSeek);
+        audio.addEventListener('seeked', onSeek);
+        audio.addEventListener('ratechange', onRateChange);
+        audio.addEventListener('timeupdate', onTimeUpdate);
+        audio.addEventListener('ended', onEnded);
+
+        if (!audio.paused) {
+            rafId = requestAnimationFrame(runTightSync);
+        }
+
+        return () => {
+            audio.removeEventListener('play', onPlay);
+            audio.removeEventListener('pause', onPause);
+            audio.removeEventListener('seeking', onSeek);
+            audio.removeEventListener('seeked', onSeek);
+            audio.removeEventListener('ratechange', onRateChange);
+            audio.removeEventListener('timeupdate', onTimeUpdate);
+            audio.removeEventListener('ended', onEnded);
+            if (rafId) {
+                cancelAnimationFrame(rafId);
+            }
+        };
+    }, [audioRef, currentSongIndex, videoOffsetSec]);
 
     return { videoRef, nextVideoRef };
 }

@@ -6,6 +6,7 @@ export interface Song {
     album?: string;
     coverImage?: string;
     visualVideo?: string;
+    videoOffsetSec?: number;
     file: string;
     duration?: string;
     order: number;

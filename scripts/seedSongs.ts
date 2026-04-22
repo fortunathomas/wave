@@ -13,6 +13,7 @@ const songs = [
         album: "No Pressure, No Diamonds",
         coverImage: "/images/npnd.png",
         visualVideo: "/canvas/rosso-nel-tanaco.mp4",
+        videoOffsetSec: 0,
         file: "/music/rosso-nel-tanaco.mp3",
         duration: "2:14",
         order: 1
@@ -25,6 +26,7 @@ const songs = [
         album: "No Pressure, No Diamonds",
         coverImage: "/images/npnd.png",
         visualVideo: "/canvas/sotto-pressione.mp4",
+        videoOffsetSec: 0,
         file: "/music/sotto-pressione.mp3",
         duration: "3:10",
         order: 2
@@ -37,6 +39,7 @@ const songs = [
         album: "No Pressure, No Diamonds",
         coverImage: "/images/npnd.png",
         visualVideo: "/canvas/why-not.mp4",
+        videoOffsetSec: 0,
         file: "/music/why-not.mp3",
         duration: "2:40",
         order: 3
@@ -49,6 +52,7 @@ const songs = [
         album: "No Pressure, No Diamonds",
         coverImage: "/images/npnd.png",
         visualVideo: "/canvas/avatar.mp4",
+        videoOffsetSec: 0,
         file: "/music/avatar.mp3",
         duration: "1:32",
         order: 4
@@ -61,6 +65,7 @@ const songs = [
         album: "No Pressure, No Diamonds",
         coverImage: "/images/npnd.png",
         visualVideo: "/canvas/cosi-non-va-bene.mp4",
+        videoOffsetSec: 0,
         file: "/music/cosi-non-va-bene.mp3",
         duration: "2:42",
         order: 5
@@ -74,6 +79,7 @@ const songs = [
         album: "No Pressure, No Diamonds",
         coverImage: "/images/npnd.png",
         visualVideo: "/canvas/skyline.mp4",
+        videoOffsetSec: 0,
         file: "/music/skyline.mp3",
         duration: "3:17",
         order: 6
@@ -86,6 +92,7 @@ const songs = [
         album: "No Pressure, No Diamonds",
         coverImage: "/images/npnd.png",
         visualVideo: "/canvas/on-the-low.mp4",
+        videoOffsetSec: 0,
         file: "/music/on-the-low.mp3",
         duration: "2:38",
         order: 7
