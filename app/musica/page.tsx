@@ -133,7 +133,7 @@ export default function MusicaPage() {
             <video
                 ref={videoRef}
                 className={styles.videoBackground}
-                src={currentSong.visualVideo || '/canvas/swagtakes.mp4'}
+                src={currentSong.visualVideo || '/canvas/avatar.mp4'}
                 autoPlay
                 muted
                 playsInline

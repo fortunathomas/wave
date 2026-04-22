@@ -17,7 +17,7 @@ export function Playlist({ songs, currentSongIndex, isPlaying, onSongChange, sty
     return (
         <div className={styles.playlistContainer}>
             <div className={styles.playlistHeader}>
-                <h3>SWAG TAKES</h3>
+                <h3>NO PRESSURE, NO DIAMONDS</h3>
                 <span className={styles.trackCount}>{songs.length} tracks</span>
             </div>
             <div className={styles.playlistScroll}>
@@ -59,7 +59,7 @@ export function SongInfo({ song, onInfoClick, styles }: SongInfoProps) {
         <div className={styles.songInfo}>
             <div className={styles.coverContainer}>
                 <img
-                    src={song.coverImage || '/images/swagtakes.png'}
+                    src={song.coverImage || '/images/npnd.png'}
                     alt={song.title}
                     className={styles.coverImage}
                 />
