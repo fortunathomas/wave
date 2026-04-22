@@ -28,16 +28,13 @@ export default function MusicaPage() {
         setDuration,
         volume,
         togglePlay,
+        handleSeek,
         handleVolumeChange,
         toggleMute,
         setShouldPlay,
     } = useAudioPlayer(songs, currentSongIndex);
 
-    const { videoRef, nextVideoRef } = useVideoPlayer(
-        currentSongIndex,
-        audioRef,
-        songs[currentSongIndex]?.videoOffsetSec ?? 0
-    );
+    const { videoRef, nextVideoRef } = useVideoPlayer(currentSongIndex);
 
     // Fetch canzoni
     useEffect(() => {
@@ -82,31 +79,6 @@ export default function MusicaPage() {
     const prevSong = useCallback(() => {
         setCurrentSongIndex(prev => (prev > 0 ? prev - 1 : prev));
     }, []);
-
-    // Link seek bar to both audio and video so they jump to the same second
-    const handleSeekLinked = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const seekTime = parseFloat(e.target.value);
-        const audio = audioRef.current;
-        if (!audio) return;
-
-        // Ignore duplicate micro-seeks that can produce audible double clicks.
-        if (Math.abs(audio.currentTime - seekTime) >= 0.05) {
-            audio.currentTime = seekTime;
-        }
-        setCurrentTime(seekTime);
-
-        const video = videoRef.current;
-        if (!video) return;
-
-        const offset = songs[currentSongIndex]?.videoOffsetSec ?? 0;
-        video.currentTime = Math.max(0, seekTime + offset);
-
-        if (audioRef.current && !audioRef.current.paused) {
-            video.play().catch(console.error);
-        } else {
-            video.pause();
-        }
-    }, [videoRef, songs, currentSongIndex, audioRef, setCurrentTime]);
 
     // Auto-advance at end of track: always autoplay next
     const handleAutoNext = useCallback(() => {
@@ -162,12 +134,14 @@ export default function MusicaPage() {
                 ref={videoRef}
                 className={styles.videoBackground}
                 src={currentSong.visualVideo || '/canvas/swagtakes.mp4'}
+                autoPlay
                 muted
                 playsInline
                 preload="auto"
                 key={currentSongIndex}
             />
 
+            {/* Preload next video (hidden) */}
             {currentSongIndex < songs.length - 1 && (
                 <video
                     ref={nextVideoRef}
@@ -203,6 +177,7 @@ export default function MusicaPage() {
                     />
                 )}
 
+                {/* Audio element — src driven by currentSong */}
                 <audio
                     ref={audioRef}
                     src={currentSong.file}
@@ -222,7 +197,7 @@ export default function MusicaPage() {
                 <ProgressBar
                     currentTime={currentTime}
                     duration={duration}
-                    onSeek={handleSeekLinked}
+                    onSeek={handleSeek}
                     formatTime={formatTime}
                     styles={styles}
                 />
