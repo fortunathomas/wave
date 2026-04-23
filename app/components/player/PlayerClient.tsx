@@ -190,6 +190,105 @@ export function PlayerClient({ initialAlbum, initialMode }: PlayerClientProps) {
         ? visibleTracks[currentVisibleIndex + 1]
         : undefined;
 
+    const syncVideoWithAudio = useCallback(async () => {
+        const video = videoRef.current;
+        const audio = audioRef.current;
+
+        if (!video || !audio || !videoSource || hasVideoError) return;
+
+        if (audio.paused) {
+            video.pause();
+            return;
+        }
+
+        if (Number.isFinite(video.duration) && video.duration > 0 && Number.isFinite(audio.currentTime)) {
+            const syncedTime = audio.currentTime % video.duration;
+            if (Math.abs(video.currentTime - syncedTime) > 0.35) {
+                video.currentTime = syncedTime;
+            }
+        }
+
+        try {
+            await video.play();
+        } catch (error) {
+            if (!(error instanceof DOMException)) return;
+
+            if (error.name === "AbortError" || error.name === "NotAllowedError") {
+                return;
+            }
+
+            if (typeof error.message === "string" && error.message.toLowerCase().includes("interrupted")) {
+                return;
+            }
+        }
+    }, [audioRef, hasVideoError, videoRef, videoSource]);
+
+    useEffect(() => {
+        void syncVideoWithAudio();
+    }, [isPlaying, currentSongIndex, syncVideoWithAudio]);
+
+    useEffect(() => {
+        // On track change (skip/next/prev/select), retry sync a few times while media metadata settles.
+        const retryDelays = [0, 220, 650];
+        const timers = retryDelays.map((delay) => window.setTimeout(() => {
+            void syncVideoWithAudio();
+        }, delay));
+
+        return () => {
+            timers.forEach((timer) => window.clearTimeout(timer));
+        };
+    }, [currentSongIndex, syncVideoWithAudio]);
+
+    useEffect(() => {
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        const handleAudioSync = () => {
+            void syncVideoWithAudio();
+        };
+
+        const events: Array<keyof HTMLMediaElementEventMap> = [
+            "play",
+            "pause",
+            "seeking",
+            "seeked",
+            "ratechange",
+            "loadedmetadata",
+            "canplay",
+            "timeupdate",
+        ];
+
+        events.forEach((eventName) => {
+            audio.addEventListener(eventName, handleAudioSync);
+        });
+
+        return () => {
+            events.forEach((eventName) => {
+                audio.removeEventListener(eventName, handleAudioSync);
+            });
+        };
+    }, [audioRef, syncVideoWithAudio]);
+
+    useEffect(() => {
+        const handleFocus = () => {
+            void syncVideoWithAudio();
+        };
+
+        const handleVisibilityChange = () => {
+            if (!document.hidden) {
+                void syncVideoWithAudio();
+            }
+        };
+
+        window.addEventListener("focus", handleFocus);
+        document.addEventListener("visibilitychange", handleVisibilityChange);
+
+        return () => {
+            window.removeEventListener("focus", handleFocus);
+            document.removeEventListener("visibilitychange", handleVisibilityChange);
+        };
+    }, [syncVideoWithAudio]);
+
     if (loading) {
         return (
             <div className={styles.loadingContainer}>
@@ -228,6 +327,12 @@ export function PlayerClient({ initialAlbum, initialMode }: PlayerClientProps) {
                     preload="auto"
                     key={currentSongIndex}
                     onError={() => setHasVideoError(true)}
+                    onLoadedMetadata={() => {
+                        void syncVideoWithAudio();
+                    }}
+                    onCanPlay={() => {
+                        void syncVideoWithAudio();
+                    }}
                 />
             ) : (
                 <img
