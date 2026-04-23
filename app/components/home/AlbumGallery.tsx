@@ -27,14 +27,14 @@ export function AlbumGallery({ albums, loading, error, styles }: AlbumGalleryPro
                 <span>{albums.length ? `${albums.length} album` : "In caricamento"}</span>
             </div>
 
-            {loading && <div className={styles.stateBox}>Caricamento album in corso...</div>}
+            {loading && <div className={styles.stateBox}>Caricamento album in corso</div>}
 
             {error && !loading && <div className={styles.stateBox}>{error}</div>}
 
             {!loading && !error && (
                 <div className={styles.albumGrid}>
                     <Link
-                        href="/player"
+                        href="/player?mode=shuffle"
                         className={`${styles.albumCard} ${styles.catalogCard}`}
                         style={{ backgroundImage: `linear-gradient(180deg, rgba(7,10,20,0.22), rgba(7,10,20,0.88)), url(${catalogBackground})` }}
                     >

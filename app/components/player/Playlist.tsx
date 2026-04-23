@@ -20,12 +20,18 @@ export function Playlist({
     selectedAlbum,
     styles,
 }: PlaylistProps) {
+    const playlistTitle = selectedAlbum === "shuffle"
+        ? "RIPRODUZIONE CASUALE"
+        : selectedAlbum === "all"
+            ? "TUTTI GLI ALBUM"
+            : selectedAlbum.toUpperCase();
+
     return (
         <div className={styles.playlistContainer}>
             <div className={styles.playlistHeader}>
                 <div className={styles.playlistHeaderText}>
-                    <h3>{selectedAlbum === 'all' ? 'TUTTI GLI ALBUM' : selectedAlbum.toUpperCase()}</h3>
-                    <span className={styles.trackCount}>{tracks.length} tracks</span>
+                    <h3>{playlistTitle}</h3>
+                    <span className={styles.trackCount}>{tracks.length} tracce</span>
                 </div>
             </div>
             <div className={styles.playlistScroll}>

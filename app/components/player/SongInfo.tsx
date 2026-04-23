@@ -13,7 +13,7 @@ export function SongInfo({ song, onInfoClick, styles }: SongInfoProps) {
         <div className={styles.songInfo}>
             <div className={styles.coverContainer}>
                 <img
-                    src={song.coverImage || '/images/npnd.png'}
+                    src={song.coverImage || '/images/default.png'}
                     alt={song.title}
                     className={styles.coverImage}
                 />

@@ -14,28 +14,53 @@ import { BackToHome } from "./BackToHome";
 
 type PlayerClientProps = {
     initialAlbum?: string;
+    initialMode?: string;
 };
 
-export function PlayerClient({ initialAlbum }: PlayerClientProps) {
+function shuffleIndices(indices: number[]) {
+    const shuffled = [...indices];
+
+    for (let i = shuffled.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    return shuffled;
+}
+
+export function PlayerClient({ initialAlbum, initialMode }: PlayerClientProps) {
     const [songs, setSongs] = useState<Song[]>([]);
     const [currentSongIndex, setCurrentSongIndex] = useState(0);
+    const [hasVideoError, setHasVideoError] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [showInfo, setShowInfo] = useState(false);
-    const initialAlbumApplied = useRef(false);
+    const initialTrackApplied = useRef(false);
+    const isShuffleMode = initialMode === "shuffle";
     const selectedAlbum = initialAlbum ?? "all";
 
-    const visibleTracks = useMemo(() => {
-        const trackEntries = songs.map((song, index) => ({ song, index }));
-
+    const baseTrackIndices = useMemo(() => {
         if (selectedAlbum === "all") {
-            return trackEntries.map((entry, displayIndex) => ({ ...entry, displayIndex }));
+            return songs.map((_, index) => index);
         }
 
-        return trackEntries
+        return songs
+            .map((song, index) => ({ song, index }))
             .filter(({ song }) => song.album === selectedAlbum)
-            .map((entry, displayIndex) => ({ ...entry, displayIndex }));
+            .map(({ index }) => index);
     }, [songs, selectedAlbum]);
+
+    const orderedTrackIndices = useMemo(() => {
+        return isShuffleMode ? shuffleIndices(baseTrackIndices) : baseTrackIndices;
+    }, [baseTrackIndices, isShuffleMode]);
+
+    const visibleTracks = useMemo(() => {
+        return orderedTrackIndices.map((index, displayIndex) => ({
+            song: songs[index],
+            index,
+            displayIndex,
+        }));
+    }, [orderedTrackIndices, songs]);
 
     const currentVisibleIndex = useMemo(() => {
         return visibleTracks.findIndex(({ index }) => index === currentSongIndex);
@@ -70,10 +95,10 @@ export function PlayerClient({ initialAlbum }: PlayerClientProps) {
                 if (data.success && data.songs.length > 0) {
                     setSongs(data.songs);
                 } else {
-                    setError("Nessuna canzone trovata nel database.");
+                    setError("Nessuna canzone trovata nel database");
                 }
             } catch {
-                setError("Impossibile caricare le canzoni. Controlla la connessione.");
+                setError("Impossibile caricare le canzoni. Controlla la connessione");
             } finally {
                 setLoading(false);
             }
@@ -83,19 +108,18 @@ export function PlayerClient({ initialAlbum }: PlayerClientProps) {
     }, []);
 
     useEffect(() => {
-        if (loading || initialAlbumApplied.current) return;
-        if (!initialAlbum || initialAlbum === "all") return;
-        if (!songs.some((song) => song.album === initialAlbum)) return;
+        setHasVideoError(false);
+    }, [currentSongIndex]);
 
-        initialAlbumApplied.current = true;
+    useEffect(() => {
+        if (loading || initialTrackApplied.current) return;
+        if (orderedTrackIndices.length === 0) return;
 
-        const firstAlbumTrackIndex = songs.findIndex((song) => song.album === initialAlbum);
-        if (firstAlbumTrackIndex >= 0) {
-            setShouldPlay(false);
-            if (audioRef.current) audioRef.current.pause();
-            setCurrentSongIndex(firstAlbumTrackIndex);
-        }
-    }, [audioRef, initialAlbum, loading, songs, setShouldPlay]);
+        initialTrackApplied.current = true;
+        setShouldPlay(false);
+        if (audioRef.current) audioRef.current.pause();
+        setCurrentSongIndex(orderedTrackIndices[0]);
+    }, [audioRef, loading, orderedTrackIndices, setShouldPlay]);
 
     const formatTime = (time: number) => {
         if (!time || Number.isNaN(time)) return "0:00";
@@ -160,12 +184,17 @@ export function PlayerClient({ initialAlbum }: PlayerClientProps) {
     }, [togglePlay, nextSong, prevSong]);
 
     const currentSong = songs[currentSongIndex];
+    const videoSource = currentSong?.visualVideo?.trim() || "";
+    const fallbackImageSource = currentSong?.coverImage?.trim() || "/images/logo.png";
+    const nextTrack = currentVisibleIndex >= 0 && currentVisibleIndex < visibleTracks.length - 1
+        ? visibleTracks[currentVisibleIndex + 1]
+        : undefined;
 
     if (loading) {
         return (
             <div className={styles.loadingContainer}>
                 <div className={styles.loadingSpinner}></div>
-                <p>Loading...</p>
+                <p>Caricamento...</p>
             </div>
         );
     }
@@ -188,22 +217,32 @@ export function PlayerClient({ initialAlbum }: PlayerClientProps) {
 
     return (
         <div className={styles.pageContainer}>
-            <video
-                ref={videoRef}
-                className={styles.videoBackground}
-                src={currentSong.visualVideo || "/canvas/npnd/avatar.mp4"}
-                autoPlay
-                muted
-                playsInline
-                preload="auto"
-                key={currentSongIndex}
-            />
+            {videoSource && !hasVideoError ? (
+                <video
+                    ref={videoRef}
+                    className={styles.videoBackground}
+                    src={videoSource}
+                    autoPlay
+                    muted
+                    playsInline
+                    preload="auto"
+                    key={currentSongIndex}
+                    onError={() => setHasVideoError(true)}
+                />
+            ) : (
+                <img
+                    className={styles.videoBackground}
+                    src={fallbackImageSource}
+                    alt=""
+                    aria-hidden="true"
+                />
+            )}
 
-            {currentSongIndex < songs.length - 1 && (
+            {nextTrack?.song.visualVideo && (
                 <video
                     ref={nextVideoRef}
                     style={{ display: "none" }}
-                    src={songs[currentSongIndex + 1]?.visualVideo}
+                    src={nextTrack.song.visualVideo}
                     preload="auto"
                     muted
                 />
@@ -221,13 +260,20 @@ export function PlayerClient({ initialAlbum }: PlayerClientProps) {
                     currentSongIndex={currentSongIndex}
                     isPlaying={isPlaying}
                     onSongChange={handleSongChange}
-                    selectedAlbum={selectedAlbum}
+                    selectedAlbum={isShuffleMode ? "shuffle" : selectedAlbum}
                     styles={styles}
                 />
 
                 <SongInfo song={currentSong} onInfoClick={() => setShowInfo((prev) => !prev)} styles={styles} />
 
-                {showInfo && <InfoModal song={currentSong} onClose={() => setShowInfo(false)} styles={styles} />}
+                {showInfo && (
+                    <InfoModal
+                        song={currentSong}
+                        runtimeDuration={duration ? formatTime(duration) : undefined}
+                        onClose={() => setShowInfo(false)}
+                        styles={styles}
+                    />
+                )}
 
                 <audio
                     ref={audioRef}

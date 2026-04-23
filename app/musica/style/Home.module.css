@@ -50,6 +50,7 @@
         radial-gradient(circle at 80% 15%, rgba(168, 85, 247, 0.16), transparent 20%),
         radial-gradient(circle at 70% 80%, rgba(14, 165, 233, 0.12), transparent 24%);
     filter: blur(12px);
+    animation: auroraFloat 18s ease-in-out infinite alternate;
 }
 
 .gridGlow {
@@ -59,6 +60,7 @@
         linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
     background-size: 48px 48px;
     mask-image: radial-gradient(circle at center, black 35%, transparent 78%);
+    animation: gridPulse 8s ease-in-out infinite;
 }
 
 .hero,
@@ -73,6 +75,7 @@
     padding: clamp(2rem, 6vw, 5rem) 0 clamp(1.25rem, 4vw, 2.5rem);
     display: grid;
     gap: 1.15rem;
+    animation: sectionRise 460ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .footer {
@@ -90,6 +93,8 @@
     font-size: 0.76rem;
     text-transform: lowercase;
     color: rgba(191, 219, 254, 0.78);
+    animation: sectionRise 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: 140ms;
 }
 
 .hero h1 {
@@ -133,6 +138,7 @@
     box-shadow: 0 18px 40px rgba(59, 130, 246, 0.26);
     font-weight: 800;
     text-decoration: none;
+    transition: transform 220ms ease, box-shadow 220ms ease, filter 220ms ease;
 }
 
 .secondaryAction {
@@ -140,10 +146,25 @@
     border: 1px solid rgba(147, 197, 253, 0.22);
     background: rgba(15, 23, 42, 0.48);
     backdrop-filter: blur(16px);
+    transition: transform 220ms ease, border-color 220ms ease, background 220ms ease;
+}
+
+.primaryAction:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 24px 46px rgba(59, 130, 246, 0.34);
+    filter: saturate(1.07);
+}
+
+.secondaryAction:hover {
+    transform: translateY(-2px);
+    border-color: rgba(147, 197, 253, 0.42);
+    background: rgba(15, 23, 42, 0.68);
 }
 
 .albumSection {
     padding-bottom: clamp(2rem, 6vw, 4rem);
+    animation: sectionRise 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: 90ms;
 }
 
 .sectionHeader {
@@ -196,6 +217,19 @@
     align-items: end;
     isolation: isolate;
     transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+    animation: cardFadeIn 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.albumCard:nth-child(2) {
+    animation-delay: 70ms;
+}
+
+.albumCard:nth-child(3) {
+    animation-delay: 120ms;
+}
+
+.albumCard:nth-child(4) {
+    animation-delay: 170ms;
 }
 
 .albumCard:hover {
@@ -259,12 +293,81 @@
     transform: scale(1.02);
     filter: saturate(1.05);
     z-index: -1;
+    transition: transform 300ms ease, filter 300ms ease;
+}
+
+.albumCard:hover .cover {
+    transform: scale(1.07);
+    filter: saturate(1.14);
 }
 
 .cardContent {
     width: 100%;
     padding: 1.5rem;
     background: linear-gradient(180deg, transparent 0%, rgba(4, 6, 15, 0.58) 62%, rgba(4, 6, 15, 0.84) 100%);
+}
+
+@keyframes sectionRise {
+    from {
+        opacity: 0;
+        transform: translateY(14px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes cardFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.99);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes auroraFloat {
+    0% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+
+    100% {
+        transform: translate3d(0, -1.8%, 0) scale(1.04);
+    }
+}
+
+@keyframes gridPulse {
+    0%,
+    100% {
+        opacity: 0.12;
+    }
+
+    50% {
+        opacity: 0.2;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .aurora,
+    .gridGlow,
+    .hero,
+    .albumSection,
+    .footer,
+    .albumCard {
+        animation: none;
+    }
+
+    .albumCard,
+    .cover,
+    .primaryAction,
+    .secondaryAction {
+        transition: none;
+    }
 }
 
 .cardMeta {

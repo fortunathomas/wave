@@ -15,7 +15,6 @@ const songs = [
         visualVideo: "/canvas/npnd/rosso-nel-tanaco.mp4",
         videoOffsetSec: 0,
         file: "/music/npnd/rosso-nel-tanaco.mp3",
-        duration: "2:14",
         order: 1
     },
     {
@@ -28,7 +27,6 @@ const songs = [
         visualVideo: "/canvas/npnd/sotto-pressione.mp4",
         videoOffsetSec: 0,
         file: "/music/npnd/sotto-pressione.mp3",
-        duration: "3:10",
         order: 2
     },
     {
@@ -41,7 +39,6 @@ const songs = [
         visualVideo: "/canvas/npnd/why-not.mp4",
         videoOffsetSec: 0,
         file: "/music/npnd/why-not.mp3",
-        duration: "2:40",
         order: 3
     },
     {
@@ -54,7 +51,6 @@ const songs = [
         visualVideo: "/canvas/npnd/avatar.mp4",
         videoOffsetSec: 0,
         file: "/music/npnd/avatar.mp3",
-        duration: "1:32",
         order: 4
     },
     {
@@ -67,7 +63,6 @@ const songs = [
         visualVideo: "/canvas/npnd/cosi-non-va-bene.mp4",
         videoOffsetSec: 0,
         file: "/music/npnd/cosi-non-va-bene.mp3",
-        duration: "2:42",
         order: 5
     },
 
@@ -81,7 +76,6 @@ const songs = [
         visualVideo: "/canvas/npnd/skyline.mp4",
         videoOffsetSec: 0,
         file: "/music/npnd/skyline.mp3",
-        duration: "3:17",
         order: 6
     },
     {
@@ -94,7 +88,6 @@ const songs = [
         visualVideo: "/canvas/npnd/on-the-low.mp4",
         videoOffsetSec: 0,
         file: "/music/npnd/on-the-low.mp3",
-        duration: "2:38",
         order: 7
     },
     {
@@ -107,7 +100,6 @@ const songs = [
         visualVideo: "/canvas/albv/intro-aspettando-la-bella-vita.mp4",
         videoOffsetSec: 0,
         file: "/music/albv/intro-aspettando-la-bella-vita.mp3",
-        duration: "3:36",
         order: 8
     },
     {
@@ -120,7 +112,6 @@ const songs = [
         visualVideo: "/canvas/albv/eyes-of-the-tiger.mp4",
         videoOffsetSec: 0,
         file: "/music/albv/eyes-of-the-tiger.mp3",
-        duration: "2:46",
         order: 9
     },
     {
@@ -133,7 +124,6 @@ const songs = [
         visualVideo: "/canvas/albv/mustang.mp4",
         videoOffsetSec: 0,
         file: "/music/albv/mustang.mp3",
-        duration: "2:24",
         order: 10
     },
     {
@@ -146,7 +136,6 @@ const songs = [
         visualVideo: "/canvas/albv/anelli-e-collane.mp4",
         videoOffsetSec: 0,
         file: "/music/albv/anelli-e-collane.mp3",
-        duration: "3:09",
         order: 11
     },
     {
@@ -159,7 +148,6 @@ const songs = [
         visualVideo: "/canvas/albv/costellazione-freestyle.mp4",
         videoOffsetSec: 0,
         file: "/music/albv/costellazione-freestyle.mp3",
-        duration: "1:13",
         order: 12
     },
     {
@@ -172,7 +160,6 @@ const songs = [
         visualVideo: "/canvas/albv/nike.mp4",
         videoOffsetSec: 0,
         file: "/music/albv/nike.mp3",
-        duration: "2:40",
         order: 13
     },
     {
@@ -185,7 +172,6 @@ const songs = [
         visualVideo: "/canvas/albv/souljas.mp4",
         videoOffsetSec: 0,
         file: "/music/albv/souljas.mp3",
-        duration: "2:53",
         order: 14
     },
     {
@@ -198,7 +184,6 @@ const songs = [
         visualVideo: "/canvas/albv/padre-nostro.mp4",
         videoOffsetSec: 0,
         file: "/music/albv/padre-nostro.mp3",
-        duration: "2:38",
         order: 15
     },
     {
@@ -211,7 +196,6 @@ const songs = [
         visualVideo: "/canvas/albv/sacrificio.mp4",
         videoOffsetSec: 0,
         file: "/music/albv/sacrificio.mp3",
-        duration: "2:13",
         order: 16
     },
     {
@@ -224,7 +208,6 @@ const songs = [
         visualVideo: "/canvas/albv/aghi-acuminati.mp4",
         videoOffsetSec: 0,
         file: "/music/albv/aghi-acuminati.mp3",
-        duration: "2:38",
         order: 17
     },
 ];
