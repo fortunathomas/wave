@@ -70,6 +70,10 @@ export default function HomePage() {
 
             <HomeHero styles={styles} />
             <AlbumGallery albums={albums} loading={loading} error={error} styles={styles} />
+            <footer className={styles.footer}>
+                <span>wave / tho</span>
+                <span>© 2026</span>
+            </footer>
         </main>
     );
 }

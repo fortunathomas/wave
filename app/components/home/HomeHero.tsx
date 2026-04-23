@@ -9,7 +9,7 @@ type HomeHeroProps = {
 export function HomeHero({ styles }: HomeHeroProps) {
     return (
         <section className={styles.hero}>
-            <p className={styles.kicker}>wave / tho ©2026</p>
+            
             <h1>wave </h1>
             <p className={styles.lead}>
                 La tua musica, sempre con te.

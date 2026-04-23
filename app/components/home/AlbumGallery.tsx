@@ -18,13 +18,13 @@ type AlbumGalleryProps = {
 };
 
 export function AlbumGallery({ albums, loading, error, styles }: AlbumGalleryProps) {
-    const catalogBackground = "/images/default.png";
+    const catalogBackground = "/images/shuffle.png";
 
     return (
         <section className={styles.albumSection} aria-label="Album disponibili">
             <div className={styles.sectionHeader}>
                 <h2>Album disponibili</h2>
-                <span>{albums.length ? `${albums.length} selezioni pronte` : "Catalogo in caricamento"}</span>
+                <span>{albums.length ? `${albums.length} album` : "In caricamento"}</span>
             </div>
 
             {loading && <div className={styles.stateBox}>Caricamento album in corso...</div>}
@@ -40,9 +40,9 @@ export function AlbumGallery({ albums, loading, error, styles }: AlbumGalleryPro
                     >
                         <div className={styles.catalogHeader}>
                             <div className={styles.catalogBadge}>Tutti i brani</div>
-                            <h3>Tutti gli album</h3>
+                            <h3>Riproduzione casuale</h3>
                         </div>
-                        <p>Entra direttamente nel player con l’intero catalogo.</p>
+                        <p>Lascia fare a noi</p>
                     </Link>
 
                     {albums.map((album) => (

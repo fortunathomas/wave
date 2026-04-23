@@ -75,10 +75,20 @@
     gap: 1.15rem;
 }
 
-.kicker {
-    text-transform: uppercase;
-    letter-spacing: 0.32em;
+.footer {
+    position: relative;
+    z-index: 1;
+    width: min(1120px, 100%);
+    margin: clamp(10.5rem, 4vw, 5.5rem) auto 0;
+    padding-top: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    border-top: 1px solid rgba(147, 197, 253, 0.22);
+    letter-spacing: 0.16em;
     font-size: 0.76rem;
+    text-transform: lowercase;
     color: rgba(191, 219, 254, 0.78);
 }
 
@@ -300,5 +310,11 @@
     .cardMeta {
         flex-direction: column;
         gap: 0.35rem;
+    }
+
+    .footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.45rem;
     }
 }
