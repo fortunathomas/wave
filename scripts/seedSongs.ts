@@ -11,10 +11,10 @@ const songs = [
         artist: "Faneto",
         producer: "Jaily & J-van",
         album: "No Pressure, No Diamonds",
-        coverImage: "/images/npnd.png",
-        visualVideo: "/canvas/npnd/rosso-nel-tanaco.mp4",
+        coverImage: "images/npnd.png",
+        visualVideo: "canvas/npnd/rosso-nel-tanaco.mp4",
         videoOffsetSec: 0,
-        file: "/music/npnd/rosso-nel-tanaco.mp3",
+        file: "music/npnd/rosso-nel-tanaco.mp3",
         order: 1
     },
     {
@@ -23,10 +23,10 @@ const songs = [
         artist: "Faneto & Artie 5ive",
         producer: "Jaily & Ddusi",
         album: "No Pressure, No Diamonds",
-        coverImage: "/images/npnd.png",
-        visualVideo: "/canvas/npnd/sotto-pressione.mp4",
+        coverImage: "images/npnd.png",
+        visualVideo: "canvas/npnd/sotto-pressione.mp4",
         videoOffsetSec: 0,
-        file: "/music/npnd/sotto-pressione.mp3",
+        file: "music/npnd/sotto-pressione.mp3",
         order: 2
     },
     {
@@ -35,10 +35,10 @@ const songs = [
         artist: "Faneto",
         producer: "Ddusi & KIID",
         album: "No Pressure, No Diamonds",
-        coverImage: "/images/npnd.png",
-        visualVideo: "/canvas/npnd/why-not.mp4",
+        coverImage: "images/npnd.png",
+        visualVideo: "canvas/npnd/why-not.mp4",
         videoOffsetSec: 0,
-        file: "/music/npnd/why-not.mp3",
+        file: "music/npnd/why-not.mp3",
         order: 3
     },
     {
@@ -47,10 +47,10 @@ const songs = [
         artist: "Faneto",
         producer: "Ddusi",
         album: "No Pressure, No Diamonds",
-        coverImage: "/images/npnd.png",
-        visualVideo: "/canvas/npnd/avatar.mp4",
+        coverImage: "images/npnd.png",
+        visualVideo: "canvas/npnd/avatar.mp4",
         videoOffsetSec: 0,
-        file: "/music/npnd/avatar.mp3",
+        file: "music/npnd/avatar.mp3",
         order: 4
     },
     {
@@ -59,23 +59,22 @@ const songs = [
         artist: "Faneto & Nerissima Serpe",
         producer: "Ddusi",
         album: "No Pressure, No Diamonds",
-        coverImage: "/images/npnd.png",
-        visualVideo: "/canvas/npnd/cosi-non-va-bene.mp4",
+        coverImage: "images/npnd.png",
+        visualVideo: "canvas/npnd/cosi-non-va-bene.mp4",
         videoOffsetSec: 0,
-        file: "/music/npnd/cosi-non-va-bene.mp3",
+        file: "music/npnd/cosi-non-va-bene.mp3",
         order: 5
     },
-
     {
         _id: "skyline",
         title: "Skyline",
         artist: "Faneto & Glocky",
         producer: "Jaily & Ddusi",
         album: "No Pressure, No Diamonds",
-        coverImage: "/images/npnd.png",
-        visualVideo: "/canvas/npnd/skyline.mp4",
+        coverImage: "images/npnd.png",
+        visualVideo: "canvas/npnd/skyline.mp4",
         videoOffsetSec: 0,
-        file: "/music/npnd/skyline.mp3",
+        file: "music/npnd/skyline.mp3",
         order: 6
     },
     {
@@ -84,10 +83,10 @@ const songs = [
         artist: "Faneto",
         producer: "Rel, Exuising & Wmelody",
         album: "No Pressure, No Diamonds",
-        coverImage: "/images/npnd.png",
-        visualVideo: "/canvas/npnd/on-the-low.mp4",
+        coverImage: "images/npnd.png",
+        visualVideo: "canvas/npnd/on-the-low.mp4",
         videoOffsetSec: 0,
-        file: "/music/npnd/on-the-low.mp3",
+        file: "music/npnd/on-the-low.mp3",
         order: 7
     },
     {
@@ -96,10 +95,10 @@ const songs = [
         artist: "Artie 5ive",
         producer: "Ddusi, Jaily & Zema",
         album: "Aspettando La Bella Vita",
-        coverImage: "/images/albv.png",
-        visualVideo: "/canvas/albv/intro-aspettando-la-bella-vita.mp4",
+        coverImage: "images/albv.png",
+        visualVideo: "canvas/albv/intro-aspettando-la-bella-vita.mp4",
         videoOffsetSec: 0,
-        file: "/music/albv/intro-aspettando-la-bella-vita.mp3",
+        file: "music/albv/intro-aspettando-la-bella-vita.mp3",
         order: 8
     },
     {
@@ -108,10 +107,10 @@ const songs = [
         artist: "Artie 5ive & Rondodasosa",
         producer: "Ron Succo, Flatpearl & 2legit jay",
         album: "Aspettando La Bella Vita",
-        coverImage: "/images/albv.png",
-        visualVideo: "/canvas/albv/eyes-of-the-tiger.mp4",
+        coverImage: "images/albv.png",
+        visualVideo: "canvas/albv/eyes-of-the-tiger.mp4",
         videoOffsetSec: 0,
-        file: "/music/albv/eyes-of-the-tiger.mp3",
+        file: "music/albv/eyes-of-the-tiger.mp3",
         order: 9
     },
     {
@@ -120,10 +119,10 @@ const songs = [
         artist: "Artie 5ive",
         producer: "Ron Succo, Flatpearl & Jaily",
         album: "Aspettando La Bella Vita",
-        coverImage: "/images/albv.png",
-        visualVideo: "/canvas/albv/mustang.mp4",
+        coverImage: "images/albv.png",
+        visualVideo: "canvas/albv/mustang.mp4",
         videoOffsetSec: 0,
-        file: "/music/albv/mustang.mp3",
+        file: "music/albv/mustang.mp3",
         order: 10
     },
     {
@@ -132,10 +131,10 @@ const songs = [
         artist: "Artie 5ive & ANNA",
         producer: "KIID, Sadturs & Lonegud",
         album: "Aspettando La Bella Vita",
-        coverImage: "/images/albv.png",
-        visualVideo: "/canvas/albv/anelli-e-collane.mp4",
+        coverImage: "images/albv.png",
+        visualVideo: "canvas/albv/anelli-e-collane.mp4",
         videoOffsetSec: 0,
-        file: "/music/albv/anelli-e-collane.mp3",
+        file: "music/albv/anelli-e-collane.mp3",
         order: 11
     },
     {
@@ -144,10 +143,10 @@ const songs = [
         artist: "Artie 5ive",
         producer: "KIID, Sadturs, B3 & TyMaz",
         album: "Aspettando La Bella Vita",
-        coverImage: "/images/albv.png",
-        visualVideo: "/canvas/albv/costellazione-freestyle.mp4",
+        coverImage: "images/albv.png",
+        visualVideo: "canvas/albv/costellazione-freestyle.mp4",
         videoOffsetSec: 0,
-        file: "/music/albv/costellazione-freestyle.mp3",
+        file: "music/albv/costellazione-freestyle.mp3",
         order: 12
     },
     {
@@ -156,10 +155,10 @@ const songs = [
         artist: "Artie 5ive, Astro & Tony Boy",
         producer: "Jaily, Jizz, Sadturs & Wairaki",
         album: "Aspettando La Bella Vita",
-        coverImage: "/images/albv.png",
-        visualVideo: "/canvas/albv/nike.mp4",
+        coverImage: "images/albv.png",
+        visualVideo: "canvas/albv/nike.mp4",
         videoOffsetSec: 0,
-        file: "/music/albv/nike.mp3",
+        file: "music/albv/nike.mp3",
         order: 13
     },
     {
@@ -168,10 +167,10 @@ const songs = [
         artist: "Artie 5ive",
         producer: "Jaily & J-Vaan",
         album: "Aspettando La Bella Vita",
-        coverImage: "/images/albv.png",
-        visualVideo: "/canvas/albv/souljas.mp4",
+        coverImage: "images/albv.png",
+        visualVideo: "canvas/albv/souljas.mp4",
         videoOffsetSec: 0,
-        file: "/music/albv/souljas.mp3",
+        file: "music/albv/souljas.mp3",
         order: 14
     },
     {
@@ -180,10 +179,10 @@ const songs = [
         artist: "Artie 5ive",
         producer: "Ddusi, Flatpearl & Ron Succo",
         album: "Aspettando La Bella Vita",
-        coverImage: "/images/albv.png",
-        visualVideo: "/canvas/albv/padre-nostro.mp4",
+        coverImage: "images/albv.png",
+        visualVideo: "canvas/albv/padre-nostro.mp4",
         videoOffsetSec: 0,
-        file: "/music/albv/padre-nostro.mp3",
+        file: "music/albv/padre-nostro.mp3",
         order: 15
     },
     {
@@ -192,10 +191,10 @@ const songs = [
         artist: "Artie 5ive & Kid Yugi",
         producer: "Jaily & Mesho",
         album: "Aspettando La Bella Vita",
-        coverImage: "/images/albv.png",
-        visualVideo: "/canvas/albv/sacrificio.mp4",
+        coverImage: "images/albv.png",
+        visualVideo: "canvas/albv/sacrificio.mp4",
         videoOffsetSec: 0,
-        file: "/music/albv/sacrificio.mp3",
+        file: "music/albv/sacrificio.mp3",
         order: 16
     },
     {
@@ -204,10 +203,10 @@ const songs = [
         artist: "Artie 5ive",
         producer: "Ddusi & Zema",
         album: "Aspettando La Bella Vita",
-        coverImage: "/images/albv.png",
-        visualVideo: "/canvas/albv/aghi-acuminati.mp4",
+        coverImage: "images/albv.png",
+        visualVideo: "canvas/albv/aghi-acuminati.mp4",
         videoOffsetSec: 0,
-        file: "/music/albv/aghi-acuminati.mp3",
+        file: "music/albv/aghi-acuminati.mp3",
         order: 17
     },
 ];
