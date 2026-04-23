@@ -1,5 +1,5 @@
 import { useRef, useState, useEffect, useCallback } from 'react';
-import type { Song } from '../types';
+import type { Song } from '../../types';
 
 export function useAudioPlayer(songs: Song[], currentSongIndex: number) {
     const audioRef = useRef<HTMLAudioElement>(null);

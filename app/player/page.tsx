@@ -1,4 +1,4 @@
-import PlayerClient from "./components/PlayerClient";
+import { PlayerClient } from "../components";
 
 type PlayerPageProps = {
     searchParams?: Promise<{

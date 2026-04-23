@@ -3,22 +3,20 @@
 import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import styles from "../../musica/style/MusicPlayer.module.css";
 import { useAudioPlayer, useVideoPlayer } from "../../musica/hooks/useAudioPlayer";
-import type { Song } from "../../musica/types";
-import {
-    Playlist,
-    SongInfo,
-    InfoModal,
-    ProgressBar,
-    Controls,
-    VolumeControl,
-} from "../../musica/components/UIComponents";
+import type { Song } from "../../types";
+import { Playlist } from "./Playlist";
+import { SongInfo } from "./SongInfo";
+import { InfoModal } from "./InfoModal";
+import { ProgressBar } from "./ProgressBar";
+import { Controls } from "./Controls";
+import { VolumeControl } from "./VolumeControl";
 import { BackToHome } from "./BackToHome";
 
 type PlayerClientProps = {
     initialAlbum?: string;
 };
 
-export default function PlayerClient({ initialAlbum }: PlayerClientProps) {
+export function PlayerClient({ initialAlbum }: PlayerClientProps) {
     const [songs, setSongs] = useState<Song[]>([]);
     const [currentSongIndex, setCurrentSongIndex] = useState(0);
     const [loading, setLoading] = useState(true);
