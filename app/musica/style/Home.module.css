@@ -1,0 +1,266 @@
+.shell {
+    min-height: 100vh;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    padding: clamp(1.25rem, 3vw, 3rem);
+    background:
+        radial-gradient(circle at top left, rgba(255, 199, 95, 0.18), transparent 30%),
+        radial-gradient(circle at 80% 18%, rgba(64, 180, 255, 0.18), transparent 28%),
+        linear-gradient(180deg, #050816 0%, #070b18 40%, #04050b 100%);
+    color: #f8fafc;
+}
+
+.aurora,
+.gridGlow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+.aurora {
+    background:
+        radial-gradient(circle at 20% 25%, rgba(255, 159, 67, 0.14), transparent 24%),
+        radial-gradient(circle at 80% 15%, rgba(56, 189, 248, 0.12), transparent 20%),
+        radial-gradient(circle at 70% 80%, rgba(251, 146, 60, 0.09), transparent 24%);
+    filter: blur(12px);
+}
+
+.gridGlow {
+    opacity: 0.18;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(circle at center, black 35%, transparent 78%);
+}
+
+.hero,
+.albumSection {
+    position: relative;
+    z-index: 1;
+    width: min(1120px, 100%);
+    margin: 0 auto;
+}
+
+.hero {
+    padding: clamp(2rem, 6vw, 5rem) 0 clamp(1.25rem, 4vw, 2.5rem);
+    display: grid;
+    gap: 1.15rem;
+}
+
+.kicker {
+    text-transform: uppercase;
+    letter-spacing: 0.32em;
+    font-size: 0.76rem;
+    color: rgba(248, 250, 252, 0.66);
+}
+
+.hero h1 {
+    max-width: 12ch;
+    font-size: clamp(2.8rem, 8vw, 6.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.06em;
+    font-weight: 900;
+    text-wrap: balance;
+}
+
+.lead {
+    max-width: 58ch;
+    font-size: clamp(1rem, 1.8vw, 1.18rem);
+    line-height: 1.7;
+    color: rgba(226, 232, 240, 0.82);
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+    padding-top: 0.5rem;
+}
+
+.primaryAction,
+.secondaryAction {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 52px;
+    padding: 0.9rem 1.25rem;
+    border-radius: 999px;
+    letter-spacing: 0.02em;
+}
+
+.primaryAction {
+    color: #04111f;
+    background: linear-gradient(135deg, #f8fafc 0%, #f59e0b 100%);
+    box-shadow: 0 18px 40px rgba(245, 158, 11, 0.25);
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.secondaryAction {
+    color: rgba(248, 250, 252, 0.78);
+    border: 1px solid rgba(248, 250, 252, 0.16);
+    background: rgba(15, 23, 42, 0.4);
+    backdrop-filter: blur(16px);
+}
+
+.albumSection {
+    padding-bottom: clamp(2rem, 6vw, 4rem);
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    align-items: baseline;
+    margin-bottom: 1rem;
+    color: rgba(248, 250, 252, 0.8);
+}
+
+.sectionHeader h2 {
+    font-size: clamp(1.1rem, 2vw, 1.35rem);
+    letter-spacing: -0.03em;
+}
+
+.sectionHeader span {
+    font-size: 0.92rem;
+    color: rgba(148, 163, 184, 0.92);
+}
+
+.stateBox {
+    padding: 1.2rem 1.4rem;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+    border-radius: 22px;
+    background: rgba(15, 23, 42, 0.58);
+    color: rgba(226, 232, 240, 0.85);
+    backdrop-filter: blur(16px);
+}
+
+.albumGrid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.albumCard {
+    grid-column: span 6;
+    position: relative;
+    min-height: 300px;
+    border-radius: 28px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(15, 23, 42, 0.58);
+    box-shadow: 0 28px 60px rgba(0, 0, 0, 0.28);
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    align-items: end;
+    isolation: isolate;
+    transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
+}
+
+.albumCard:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 32px 70px rgba(0, 0, 0, 0.36);
+}
+
+.catalogCard {
+    padding: 1.5rem;
+    background:
+        radial-gradient(circle at top right, rgba(56, 189, 248, 0.18), transparent 34%),
+        linear-gradient(180deg, rgba(15, 23, 42, 0.78), rgba(10, 15, 28, 0.92));
+}
+
+.catalogBadge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: auto;
+    width: fit-content;
+    padding: 0.35rem 0.7rem;
+    border-radius: 999px;
+    border: 1px solid rgba(248, 250, 252, 0.14);
+    background: rgba(255, 255, 255, 0.06);
+    color: rgba(248, 250, 252, 0.85);
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.catalogCard h3,
+.cardContent h3 {
+    font-size: clamp(1.4rem, 2.5vw, 2rem);
+    letter-spacing: -0.05em;
+    margin-bottom: 0.35rem;
+}
+
+.catalogCard p,
+.cardContent p {
+    color: rgba(226, 232, 240, 0.82);
+    line-height: 1.55;
+}
+
+.cover {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    transform: scale(1.02);
+    filter: saturate(1.05);
+    z-index: -1;
+}
+
+.cardContent {
+    width: 100%;
+    padding: 1.5rem;
+    background: linear-gradient(180deg, transparent 0%, rgba(4, 6, 15, 0.82) 65%, rgba(4, 6, 15, 0.94) 100%);
+}
+
+.cardMeta {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.8rem;
+    color: rgba(226, 232, 240, 0.7);
+    font-size: 0.86rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+@media (max-width: 900px) {
+    .albumCard {
+        grid-column: span 12;
+    }
+
+    .sectionHeader {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 640px) {
+    .hero h1 {
+        max-width: 11ch;
+    }
+
+    .actions {
+        align-items: stretch;
+    }
+
+    .primaryAction,
+    .secondaryAction {
+        width: 100%;
+    }
+
+    .albumCard {
+        min-height: 260px;
+    }
+
+    .cardMeta {
+        flex-direction: column;
+        gap: 0.35rem;
+    }
+}

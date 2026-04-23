@@ -11,8 +11,6 @@ interface PlaylistProps {
     isPlaying: boolean;
     onSongChange: (index: number) => void;
     selectedAlbum: string;
-    albums: string[];
-    onAlbumChange: (album: string) => void;
     styles: Styles;
 }
 
@@ -22,8 +20,6 @@ export function Playlist({
     isPlaying,
     onSongChange,
     selectedAlbum,
-    albums,
-    onAlbumChange,
     styles,
 }: PlaylistProps) {
     return (
@@ -32,24 +28,6 @@ export function Playlist({
                 <div className={styles.playlistHeaderText}>
                     <h3>{selectedAlbum === 'all' ? 'TUTTI GLI ALBUM' : selectedAlbum.toUpperCase()}</h3>
                     <span className={styles.trackCount}>{tracks.length} tracks</span>
-                </div>
-                <div className={styles.albumSelectWrap}>
-                    <label htmlFor="album-select" className={styles.albumLabel}>
-                        Album
-                    </label>
-                    <select
-                        id="album-select"
-                        value={selectedAlbum}
-                        onChange={(e) => onAlbumChange(e.target.value)}
-                        className={styles.albumSelect}
-                    >
-                        <option value="all">Tutti gli album</option>
-                        {albums.map((album) => (
-                            <option key={album} value={album}>
-                                {album}
-                            </option>
-                        ))}
-                    </select>
                 </div>
             </div>
             <div className={styles.playlistScroll}>

@@ -6,11 +6,12 @@
 
 body {
     min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(135deg, #00213d 0%, #000000 100%);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    width: 100%;
+    display: block;
+    overflow-x: hidden;
+    background: #050816;
+    color: #f8fafc;
+    font-family: 'Trebuchet MS', 'Segoe UI', sans-serif;
 }
 
 form {
