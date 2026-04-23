@@ -1,11 +1,3 @@
-/* ============================================
-   BASE STYLES
-   Font, Loading States, Main Containers
-   ============================================ */
-
-/* San Francisco Pro font - usa i font di sistema Apple */
-
-/* --- LOADING & ERROR STATES --- */
 .loadingContainer {
     min-height: 100vh;
     width: 100vw;

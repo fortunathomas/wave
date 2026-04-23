@@ -80,10 +80,9 @@ export function useAudioPlayer(songs: Song[], currentSongIndex: number) {
         };
     }, [songs.length]); // re-run when songs load so audioRef.current is in the DOM
 
-    // Reset playing state when song changes
+    // Reset visible playing state when song changes, but preserve the autoplay intent.
     useEffect(() => {
         setIsPlaying(false);
-        shouldPlayRef.current = false;
     }, [currentSongIndex]);
 
     // Song change: reset state, reload audio, play when ready if shouldPlay is true

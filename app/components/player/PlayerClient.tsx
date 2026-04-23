@@ -18,10 +18,13 @@ type PlayerClientProps = {
 };
 
 function shuffleIndices(indices: number[]) {
+    if (indices.length <= 1) return [...indices];
+
     const shuffled = [...indices];
 
-    for (let i = shuffled.length - 1; i > 0; i -= 1) {
-        const j = Math.floor(Math.random() * (i + 1));
+    // Keep the first track as startup track, shuffle only the remaining items.
+    for (let i = shuffled.length - 1; i > 1; i -= 1) {
+        const j = Math.floor(Math.random() * i) + 1;
         [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
     }
 
@@ -130,7 +133,7 @@ export function PlayerClient({ initialAlbum, initialMode }: PlayerClientProps) {
 
     const handleSongChange = useCallback(
         (index: number) => {
-            setShouldPlay(false);
+            setShouldPlay(true);
             if (audioRef.current) audioRef.current.pause();
             setCurrentSongIndex(index);
         },
@@ -142,18 +145,20 @@ export function PlayerClient({ initialAlbum, initialMode }: PlayerClientProps) {
 
         const nextVisibleIndex = currentVisibleIndex >= 0 ? currentVisibleIndex + 1 : 0;
         if (nextVisibleIndex < visibleTracks.length) {
+            setShouldPlay(true);
             setCurrentSongIndex(visibleTracks[nextVisibleIndex].index);
         }
-    }, [currentVisibleIndex, visibleTracks]);
+    }, [currentVisibleIndex, visibleTracks, setShouldPlay]);
 
     const prevSong = useCallback(() => {
         if (visibleTracks.length === 0) return;
 
         const previousVisibleIndex = currentVisibleIndex >= 0 ? currentVisibleIndex - 1 : 0;
         if (previousVisibleIndex >= 0) {
+            setShouldPlay(true);
             setCurrentSongIndex(visibleTracks[previousVisibleIndex].index);
         }
-    }, [currentVisibleIndex, visibleTracks]);
+    }, [currentVisibleIndex, visibleTracks, setShouldPlay]);
 
     const handleAutoNext = useCallback(() => {
         const nextVisibleIndex = currentVisibleIndex >= 0 ? currentVisibleIndex + 1 : 0;
