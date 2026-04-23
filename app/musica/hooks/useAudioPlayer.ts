@@ -183,6 +183,23 @@ export function useVideoPlayer(currentSongIndex: number) {
     const nextVideoRef = useRef<HTMLVideoElement>(null);
     const isReversingRef = useRef(false);
 
+    const safePlay = useCallback(async (video: HTMLVideoElement) => {
+        try {
+            await video.play();
+        } catch (error) {
+            if (!(error instanceof DOMException)) return;
+
+            // Chrome can interrupt background/video-only play requests to save power.
+            if (error.name === 'AbortError' || error.name === 'NotAllowedError') {
+                return;
+            }
+
+            if (typeof error.message === 'string' && error.message.toLowerCase().includes('interrupted')) {
+                return;
+            }
+        }
+    }, []);
+
     // Preload next video
     useEffect(() => {
         if (nextVideoRef.current) {
@@ -200,7 +217,7 @@ export function useVideoPlayer(currentSongIndex: number) {
         const timer = setTimeout(() => {
             isReversingRef.current = false;
             video.load();
-            video.play().catch(console.error);
+            void safePlay(video);
 
             video.addEventListener('canplay', () => {
                 video.style.opacity = '1';
@@ -208,7 +225,7 @@ export function useVideoPlayer(currentSongIndex: number) {
         }, 300);
 
         return () => clearTimeout(timer);
-    }, [currentSongIndex]);
+    }, [currentSongIndex, safePlay]);
 
     // Reverse loop at end of video
     useEffect(() => {
@@ -222,7 +239,7 @@ export function useVideoPlayer(currentSongIndex: number) {
             if (video.currentTime <= 0.03) {
                 isReversingRef.current = false;
                 video.currentTime = 0;
-                video.play().catch(console.error);
+                void safePlay(video);
             } else {
                 video.currentTime = Math.max(0, video.currentTime - 0.033);
                 animationFrameId = requestAnimationFrame(reversePlay);
@@ -242,7 +259,7 @@ export function useVideoPlayer(currentSongIndex: number) {
             video.removeEventListener('timeupdate', handleTimeUpdate);
             if (animationFrameId) cancelAnimationFrame(animationFrameId);
         };
-    }, [currentSongIndex]);
+    }, [currentSongIndex, safePlay]);
 
     return { videoRef, nextVideoRef };
 }
