@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { existsSync } from 'node:fs';
+import path from 'node:path';
 
 const s3 = new S3Client({
     endpoint: 'https://s3.us-west-004.backblazeb2.com',
@@ -13,6 +15,12 @@ const s3 = new S3Client({
 
 const BUCKET = process.env.B2_BUCKET_NAME!;
 const EXPIRES_IN = 3600;
+const PUBLIC_DIR = path.join(process.cwd(), 'public');
+
+function normalizeMediaKey(key: string): string {
+    const cleanKey = key.startsWith('/') ? key.slice(1) : key;
+    return path.posix.normalize(cleanKey).replace(/^\/+/, '');
+}
 
 async function signUrl(key: string): Promise<string> {
     const command = new GetObjectCommand({ Bucket: BUCKET, Key: key });
@@ -60,7 +68,24 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ success: false, error: 'Missing media key' }, { status: 400 });
     }
 
-    const signedUrl = await signUrl(key);
+    const normalizedKey = normalizeMediaKey(key);
+    if (!normalizedKey || normalizedKey.includes('..')) {
+        return NextResponse.json({ success: false, error: 'Invalid media key' }, { status: 400 });
+    }
+
+    const localPath = path.join(PUBLIC_DIR, normalizedKey);
+    if (existsSync(localPath)) {
+        const localUrl = new URL(`/${normalizedKey}`, request.url);
+        return NextResponse.redirect(localUrl);
+    }
+
+    let signedUrl: string;
+    try {
+        signedUrl = await signUrl(normalizedKey);
+    } catch {
+        return NextResponse.json({ success: false, error: 'Unable to sign media URL' }, { status: 502 });
+    }
+
     const upstream = await fetch(signedUrl, {
         headers: pickForwardHeaders(request),
     });

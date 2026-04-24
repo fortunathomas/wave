@@ -41,6 +41,11 @@ export function PlayerClient({ initialAlbum, initialMode }: PlayerClientProps) {
     const initialTrackApplied = useRef(false);
     const isShuffleMode = initialMode === "shuffle";
     const selectedAlbum = initialAlbum ?? "all";
+    const isIOS = useMemo(() => {
+        if (typeof navigator === "undefined") return false;
+        const ua = navigator.userAgent || "";
+        return /iPad|iPhone|iPod/.test(ua) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    }, []);
 
     const baseTrackIndices = useMemo(() => {
         if (selectedAlbum === "all") {
@@ -199,7 +204,7 @@ export function PlayerClient({ initialAlbum, initialMode }: PlayerClientProps) {
         const video = videoRef.current;
         const audio = audioRef.current;
 
-        if (!video || !audio || !videoSource || hasVideoError) return;
+        if (!video || !audio || !videoSource || hasVideoError || isIOS || document.hidden) return;
 
         if (audio.paused) {
             video.pause();
@@ -226,7 +231,7 @@ export function PlayerClient({ initialAlbum, initialMode }: PlayerClientProps) {
                 return;
             }
         }
-    }, [audioRef, hasVideoError, videoRef, videoSource]);
+    }, [audioRef, hasVideoError, isIOS, videoRef, videoSource]);
 
     useEffect(() => {
         void syncVideoWithAudio();
@@ -280,6 +285,12 @@ export function PlayerClient({ initialAlbum, initialMode }: PlayerClientProps) {
         };
 
         const handleVisibilityChange = () => {
+            if (document.hidden) {
+                if (videoRef.current) {
+                    videoRef.current.pause();
+                }
+                return;
+            }
             if (!document.hidden) {
                 void syncVideoWithAudio();
             }
@@ -292,7 +303,71 @@ export function PlayerClient({ initialAlbum, initialMode }: PlayerClientProps) {
             window.removeEventListener("focus", handleFocus);
             document.removeEventListener("visibilitychange", handleVisibilityChange);
         };
-    }, [syncVideoWithAudio]);
+    }, [syncVideoWithAudio, videoRef]);
+
+    useEffect(() => {
+        if (typeof navigator === "undefined" || !("mediaSession" in navigator)) return;
+
+        navigator.mediaSession.setActionHandler("play", () => {
+            if (!isPlaying) {
+                void togglePlay();
+            }
+        });
+
+        navigator.mediaSession.setActionHandler("pause", () => {
+            if (isPlaying) {
+                void togglePlay();
+            }
+        });
+
+        navigator.mediaSession.setActionHandler("previoustrack", () => {
+            prevSong();
+        });
+
+        navigator.mediaSession.setActionHandler("nexttrack", () => {
+            nextSong();
+        });
+
+        return () => {
+            navigator.mediaSession.setActionHandler("play", null);
+            navigator.mediaSession.setActionHandler("pause", null);
+            navigator.mediaSession.setActionHandler("previoustrack", null);
+            navigator.mediaSession.setActionHandler("nexttrack", null);
+        };
+    }, [isPlaying, nextSong, prevSong, togglePlay]);
+
+    useEffect(() => {
+        if (!currentSong) return;
+        if (typeof navigator === "undefined" || !("mediaSession" in navigator)) return;
+
+        const artworkSource = currentSong.coverImage?.trim() || "/images/logo.png";
+        const absoluteArtworkSource = artworkSource.startsWith("http")
+            ? artworkSource
+            : `${window.location.origin}${artworkSource.startsWith("/") ? "" : "/"}${artworkSource}`;
+
+        if (typeof window !== "undefined" && "MediaMetadata" in window) {
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: currentSong.title,
+                artist: currentSong.artist,
+                album: currentSong.album,
+                artwork: [
+                    { src: absoluteArtworkSource, sizes: "512x512", type: "image/png" },
+                    { src: absoluteArtworkSource, sizes: "256x256", type: "image/png" },
+                ],
+            });
+        }
+
+        navigator.mediaSession.playbackState = isPlaying ? "playing" : "paused";
+
+        const hasFinitePosition = Number.isFinite(duration) && Number.isFinite(currentTime) && duration > 0;
+        if (hasFinitePosition && typeof navigator.mediaSession.setPositionState === "function") {
+            navigator.mediaSession.setPositionState({
+                duration,
+                playbackRate: 1,
+                position: Math.min(currentTime, duration),
+            });
+        }
+    }, [currentSong, currentTime, duration, isPlaying]);
 
     if (loading) {
         return (
@@ -321,7 +396,7 @@ export function PlayerClient({ initialAlbum, initialMode }: PlayerClientProps) {
 
     return (
         <div className={styles.pageContainer}>
-            {videoSource && !hasVideoError ? (
+            {videoSource && !hasVideoError && !isIOS ? (
                 <video
                     ref={videoRef}
                     className={styles.videoBackground}
