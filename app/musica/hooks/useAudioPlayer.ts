@@ -6,6 +6,7 @@ export function useAudioPlayer(songs: Song[], currentSongIndex: number) {
     const audioContextRef = useRef<AudioContext | null>(null);
     const analyserRef = useRef<AnalyserNode | null>(null);
     const gainNodeRef = useRef<GainNode | null>(null);
+    const isIOSRef = useRef(false);
 
     // Tracks whether we *want* to play — survives across async song changes
     const shouldPlayRef = useRef(false);
@@ -28,11 +29,21 @@ export function useAudioPlayer(songs: Song[], currentSongIndex: number) {
         return 1;
     });
 
+    useEffect(() => {
+        if (typeof navigator === 'undefined') return;
+        const ua = navigator.userAgent || '';
+        const isiOSDevice = /iPad|iPhone|iPod/.test(ua) ||
+            (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        isIOSRef.current = isiOSDevice;
+    }, []);
+
     // Setup Web Audio API context (once, when songs are available)
     useEffect(() => {
         if (!audioRef.current || audioContextRef.current || songs.length === 0) return;
+        if (isIOSRef.current) return;
         try {
-            const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+            const AudioContextClass = window.AudioContext;
+            if (!AudioContextClass) return;
             const audioContext = new AudioContextClass();
             const analyser = audioContext.createAnalyser();
             const gainNode = audioContext.createGain();
@@ -116,6 +127,8 @@ export function useAudioPlayer(songs: Song[], currentSongIndex: number) {
     useEffect(() => {
         if (gainNodeRef.current) {
             gainNodeRef.current.gain.value = volume;
+        } else if (audioRef.current) {
+            audioRef.current.volume = volume;
         }
         localStorage.setItem('playerVolume', String(volume));
     }, [volume]);
