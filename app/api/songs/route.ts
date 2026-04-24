@@ -5,6 +5,12 @@ function buildMediaUrl(key: string): string {
     if (!key) return '';
 
     const cleanKey = key.startsWith('/') ? key.slice(1) : key;
+
+    // Cover assets are already shipped in /public/images and are more reliable cross-device.
+    if (cleanKey.startsWith('images/')) {
+        return `/${cleanKey}`;
+    }
+
     return `/api/media?key=${encodeURIComponent(cleanKey)}`;
 }
 
