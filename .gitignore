@@ -39,4 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-/public/
+
+# local media assets are served from database/storage, do not track in git
+/public/music/
+/public/canvas/
