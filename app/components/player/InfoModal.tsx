@@ -14,7 +14,7 @@ export function InfoModal({ song, runtimeDuration, onClose, styles }: InfoModalP
         <div className={styles.infoModal}>
             <div className={styles.infoContent}>
                 <button onClick={onClose} className={styles.closeBtn}>
-                    <img src="/ico/x.png" alt="Close" width="20" height="20" />
+                    <img src="/api/media?key=ico%2Fx.png" alt="Close" width="20" height="20" />
                 </button>
                 <h3>{song.title}</h3>
                 <div className={styles.infoRow}>

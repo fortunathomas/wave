@@ -24,7 +24,7 @@ export function SongInfo({ song, onInfoClick, styles }: SongInfoProps) {
                     <p className={styles.songArtist}>{song.artist}</p>
                 </div>
                 <button onClick={onInfoClick} className={styles.infoBtn} aria-label="Info">
-                    <img src="/ico/info.png" alt="Info" width="24" height="24" />
+                    <img src="/api/media?key=ico%2Finfo.png" alt="Info" width="24" height="24" />
                 </button>
             </div>
         </div>

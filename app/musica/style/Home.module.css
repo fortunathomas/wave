@@ -19,7 +19,7 @@
     inset: 0;
     background:
         linear-gradient(180deg, rgba(5, 8, 22, 0.08), rgba(5, 8, 22, 0.62)),
-        url("/images/logo.png") center center / min(72vw, 860px) no-repeat;
+        url("/api/media?key=images%2Flogo.png") center center / min(72vw, 860px) no-repeat;
     opacity: 0.12;
     filter: saturate(1.15) brightness(1.05);
     pointer-events: none;

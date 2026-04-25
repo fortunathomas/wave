@@ -18,7 +18,7 @@ type AlbumGalleryProps = {
 };
 
 export function AlbumGallery({ albums, loading, error, styles }: AlbumGalleryProps) {
-    const catalogBackground = "/images/shuffle.png";
+    const catalogBackground = "/api/media?key=images%2Fshuffle.png";
 
     return (
         <section className={styles.albumSection} aria-label="Album disponibili">
