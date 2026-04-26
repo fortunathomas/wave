@@ -3,25 +3,22 @@ import type { Song } from '../../types';
 
 export function useAudioPlayer(songs: Song[], currentSongIndex: number) {
     const audioRef = useRef<HTMLAudioElement>(null);
-    const audioContextRef = useRef<AudioContext | null>(null);
     const analyserRef = useRef<AnalyserNode | null>(null);
-    const gainNodeRef = useRef<GainNode | null>(null);
     const isIOSRef = useRef(false);
-
-    // Tracks whether we *want* to play — survives across async song changes
     const shouldPlayRef = useRef(false);
+    const volumeRef = useRef(1);
 
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
 
-    // Load volume from localStorage on init
     const [volume, setVolume] = useState(() => {
         if (typeof window !== 'undefined') {
             const saved = localStorage.getItem('playerVolume');
             if (saved !== null) {
                 const parsed = parseFloat(saved);
                 if (!isNaN(parsed) && parsed >= 0 && parsed <= 1) {
+                    volumeRef.current = parsed;
                     return parsed;
                 }
             }
@@ -32,51 +29,18 @@ export function useAudioPlayer(songs: Song[], currentSongIndex: number) {
     useEffect(() => {
         if (typeof navigator === 'undefined') return;
         const ua = navigator.userAgent || '';
-        const isiOSDevice = /iPad|iPhone|iPod/.test(ua) ||
+        isIOSRef.current = /iPad|iPhone|iPod/.test(ua) ||
             (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-        isIOSRef.current = isiOSDevice;
     }, []);
 
-    // Setup Web Audio API context (once, when songs are available)
-    useEffect(() => {
-        if (!audioRef.current || audioContextRef.current || songs.length === 0) return;
-        if (isIOSRef.current) return;
-        try {
-            const AudioContextClass = window.AudioContext;
-            if (!AudioContextClass) return;
-            const audioContext = new AudioContextClass();
-            const analyser = audioContext.createAnalyser();
-            const gainNode = audioContext.createGain();
-            const source = audioContext.createMediaElementSource(audioRef.current);
-            source.connect(gainNode);
-            gainNode.connect(analyser);
-            analyser.connect(audioContext.destination);
-            analyser.fftSize = 256;
-            audioContextRef.current = audioContext;
-            analyserRef.current = analyser;
-            gainNodeRef.current = gainNode;
-            // Apply saved volume to the gainNode when it's created
-            gainNode.gain.value = volume;
-        } catch (error) {
-            console.error('Audio context setup error:', error);
-        }
-    }, [songs, volume]);
-
-    // Sync isPlaying with native audio element events — this is the source of truth
     useEffect(() => {
         const audio = audioRef.current;
         if (!audio) return;
 
         const onPlay = () => setIsPlaying(true);
         const onPause = () => setIsPlaying(false);
-        const onEnded = () => {
-            shouldPlayRef.current = false;
-            setIsPlaying(false);
-        };
-        const onError = () => {
-            shouldPlayRef.current = false;
-            setIsPlaying(false);
-        };
+        const onEnded = () => { shouldPlayRef.current = false; setIsPlaying(false); };
+        const onError = () => { shouldPlayRef.current = false; setIsPlaying(false); };
 
         audio.addEventListener('play', onPlay);
         audio.addEventListener('pause', onPause);
@@ -89,14 +53,12 @@ export function useAudioPlayer(songs: Song[], currentSongIndex: number) {
             audio.removeEventListener('ended', onEnded);
             audio.removeEventListener('error', onError);
         };
-    }, [songs.length]); // re-run when songs load so audioRef.current is in the DOM
+    }, [songs.length]);
 
-    // Reset visible playing state when song changes, but preserve the autoplay intent.
     useEffect(() => {
         setIsPlaying(false);
     }, [currentSongIndex]);
 
-    // Song change: reset state, reload audio, play when ready if shouldPlay is true
     useEffect(() => {
         const audio = audioRef.current;
         if (!audio || songs.length === 0) return;
@@ -104,8 +66,10 @@ export function useAudioPlayer(songs: Song[], currentSongIndex: number) {
         setCurrentTime(0);
         setDuration(0);
         audio.pause();
+        audio.volume = volumeRef.current;
 
         const onCanPlay = () => {
+            audio.volume = volumeRef.current;
             if (shouldPlayRef.current) {
                 audio.play().catch((err) => {
                     console.error('Autoplay error:', err);
@@ -114,7 +78,6 @@ export function useAudioPlayer(songs: Song[], currentSongIndex: number) {
             }
         };
 
-        // Add listener before load() to avoid missing the event
         audio.addEventListener('canplay', onCanPlay, { once: true });
         audio.load();
 
@@ -123,11 +86,9 @@ export function useAudioPlayer(songs: Song[], currentSongIndex: number) {
         };
     }, [currentSongIndex, songs]);
 
-    // Apply volume and persist to localStorage
     useEffect(() => {
-        if (gainNodeRef.current) {
-            gainNodeRef.current.gain.value = volume;
-        } else if (audioRef.current) {
+        volumeRef.current = volume;
+        if (audioRef.current) {
             audioRef.current.volume = volume;
         }
         localStorage.setItem('playerVolume', String(volume));
@@ -137,9 +98,6 @@ export function useAudioPlayer(songs: Song[], currentSongIndex: number) {
         const audio = audioRef.current;
         if (!audio) return;
         try {
-            if (audioContextRef.current?.state === 'suspended') {
-                await audioContextRef.current.resume();
-            }
             if (audio.paused) {
                 shouldPlayRef.current = true;
                 await audio.play();
@@ -200,26 +158,17 @@ export function useVideoPlayer(currentSongIndex: number) {
             await video.play();
         } catch (error) {
             if (!(error instanceof DOMException)) return;
-
-            // Chrome can interrupt background/video-only play requests to save power.
-            if (error.name === 'AbortError' || error.name === 'NotAllowedError') {
-                return;
-            }
-
-            if (typeof error.message === 'string' && error.message.toLowerCase().includes('interrupted')) {
-                return;
-            }
+            if (error.name === 'AbortError' || error.name === 'NotAllowedError') return;
+            if (typeof error.message === 'string' && error.message.toLowerCase().includes('interrupted')) return;
         }
     }, []);
 
-    // Preload next video
     useEffect(() => {
         if (nextVideoRef.current) {
             nextVideoRef.current.load();
         }
     }, [currentSongIndex]);
 
-    // Fade out → load new → fade in on song change
     useEffect(() => {
         const video = videoRef.current;
         if (!video) return;
@@ -230,7 +179,6 @@ export function useVideoPlayer(currentSongIndex: number) {
             isReversingRef.current = false;
             video.load();
             void safePlay(video);
-
             video.addEventListener('canplay', () => {
                 video.style.opacity = '1';
             }, { once: true });
@@ -239,7 +187,6 @@ export function useVideoPlayer(currentSongIndex: number) {
         return () => clearTimeout(timer);
     }, [currentSongIndex, safePlay]);
 
-    // Reverse loop at end of video
     useEffect(() => {
         const video = videoRef.current;
         if (!video) return;
