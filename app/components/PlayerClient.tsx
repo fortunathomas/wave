@@ -1,9 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import styles from "../../musica/style/MusicPlayer.module.css";
-import { useAudioPlayer, useVideoPlayer } from "../../musica/hooks/useAudioPlayer";
-import type { Song } from "../../types";
+import styles from "../player/styles/MusicPlayer.module.css";
+import { useAudioPlayer, useVideoPlayer } from "../player/hooks/useAudioPlayer";
+import type { Song } from "../types";
 import { Playlist } from "./Playlist";
 import { SongInfo } from "./SongInfo";
 import { InfoModal } from "./InfoModal";

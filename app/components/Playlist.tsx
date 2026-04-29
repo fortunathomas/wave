@@ -1,5 +1,5 @@
 import React from "react";
-import type { Song } from "../../types";
+import type { Song } from "../types";
 
 type Styles = { readonly [key: string]: string };
 

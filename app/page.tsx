@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import styles from "./musica/style/Home.module.css";
+import styles from "./components/Home.module.css";
 import type { Song } from "./types";
 import { AlbumGallery, HomeHero } from "./components";
 
