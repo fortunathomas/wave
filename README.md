@@ -1,8 +1,8 @@
 # wave
 
-'wav​e' è un’applicazione web progettata per consentire l’ascolto di musica direttamente dal browser.  
-L’interfaccia si presenta moderna e minimale, con tutti i comandi essenziali per la riproduzione dei brani, come play, pausa e gestione della traccia.  
-Durante l’ascolto, l’applicazione mostra una versione animata della copertina del brano in riproduzione: questa animazione rende l’esperienza più coinvolgente e crea un’atmosfera dinamica e piacevole.
+'wav​e' is a web application designed to let users listen to music directly in the browser.  
+The interface is modern and minimal, with all the essential playback controls such as play, pause, and track management.  
+During playback, the app shows an animated version of the current track’s cover art: this animation makes the experience more immersive and creates a dynamic, pleasant atmosphere.
 
 A personal web music player built with Next.js, featuring playlist management and a clean glassmorphism UI.
 
@@ -14,40 +14,40 @@ A personal web music player built with Next.js, featuring playlist management an
 - **CSS Modules**
 - **Web Audio API**
   
-## Funzionalità
+## Features
 
-- Player accessibile direttamente (nessun gate/password)
-- Visual animata/loop legata al brano in riproduzione
-- Playlist con indicatore di riproduzione
-- Informazioni traccia (titolo, artista, produttore, album, durata)
-- Barra di avanzamento con seek
-- Controllo volume con toggle mute e persistenza in `localStorage`
-- Scorciatoie da tastiera: `Space` = play/pausa, `←` / `→` = traccia precedente/successiva
-- Avanzamento automatico a fine brano
+- Player accessible directly (no gate/password)
+- Animated visual/loop linked to the currently playing track
+- Playlist with playback indicator
+- Track info (title, artist, producer, album, duration)
+- Progress bar with seeking
+- Volume control with mute toggle and persistence in `localStorage`
+- Keyboard shortcuts: `Space` = play/pause, `←` / `→` = previous/next track
+- Automatic track advance at the end of playback
 - Layout responsive
 
-## Struttura del progetto
+## Project structure
 
 ```text
 app/
 ├── api/
-│   └── songs/route.ts           # API: espone le canzoni da data/songs.json
-├── components/                  # Componenti UI del player (Playlist, Controls, modali, ecc.)
+│   └── songs/route.ts           # API: exposes songs from data/songs.json
+├── components/                  # Player UI components (Playlist, Controls, modals, etc.)
 ├── player/
-│   ├── hooks/                   # Logica player (audio/video)
-│   └── styles/                  # CSS Modules del player
-├── types.ts                     # Tipi condivisi (Song)
+│   ├── hooks/                   # Player logic (audio/video)
+│   └── styles/                  # Player CSS Modules
+├── types.ts                     # Shared types (Song)
 ├── globals.css
 ├── layout.tsx
 └── page.tsx                     # Entry/landing
 
 data/
-└── songs.json                   # Catalogo canzoni
+└── songs.json                   # Song catalog
 
 scripts/
-└── seedSongs.ts                 # Script di generazione del catalogo songs.json
+└── seedSongs.ts                 # Song catalog generation script
 ```
 
-## Note
+## Notes
 
-- L’endpoint `app/api/songs/route.ts` costruisce gli URL finali dei file multimediali a partire dai percorsi presenti in `data/songs.json`.
+- The `app/api/songs/route.ts` endpoint builds final media file URLs from the paths listed in `data/songs.json`.
