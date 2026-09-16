@@ -1,5 +1,5 @@
-// Script per aggiornare data/songs.json
-// Esegui: npx tsx scripts/seedSongs.ts
+// Script to update data/songs.json
+// Run: npx tsx scripts/seedSongs.ts
 
 import fs from 'fs';
 import path from 'path';
